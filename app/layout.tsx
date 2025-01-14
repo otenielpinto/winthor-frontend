@@ -1,19 +1,25 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type { Metadata } from "next";
+import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
+import ReactQueryProvider from "@/providers/react-query";
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-}
+  title: "Komache Software",
+  description:
+    "Komache Software: Inovando o futuro, uma linha de código por vez.",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="pt-BR">
+      <body>
+        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <Toaster />
+      </body>
     </html>
-  )
+  );
 }
