@@ -1,39 +1,46 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { InfoIcon } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { InfoIcon } from "lucide-react";
 
-export default function MetricCards({ data }) {
-  if (!data) return null
+export default function MetricCards({ data }: any) {
+  if (!data) return null;
 
   const metrics = [
     {
-      title: 'Total de Pedidos',
+      title: "Total de Pedidos",
       value: data.totalOrders,
-      tooltip: 'Número total de pedidos no período selecionado'
+      tooltip: "Número total de pedidos no período selecionado",
     },
     {
-      title: 'Volume de Vendas',
+      title: "Volume de Vendas",
       value: `R$ ${data.salesVolume.toFixed(2)}`,
-      tooltip: 'Valor total das vendas no período selecionado'
+      tooltip: "Valor total das vendas no período selecionado",
     },
     {
-      title: 'Tempo Médio de Processamento',
+      title: "Tempo Médio de Processamento",
       value: `${data.averageProcessingTime.toFixed(2)} horas`,
-      tooltip: 'Tempo médio entre a realização do pedido e o envio'
+      tooltip: "Tempo médio entre a realização do pedido e o envio",
     },
     {
-      title: 'Taxa de Cancelamento',
+      title: "Taxa de Cancelamento",
       value: `${data.cancellationRate.toFixed(2)}%`,
-      tooltip: 'Porcentagem de pedidos cancelados em relação ao total'
-    }
-  ]
+      tooltip: "Porcentagem de pedidos cancelados em relação ao total",
+    },
+  ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
       {metrics.map((metric, index) => (
         <Card key={index}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {metric.title}
+            </CardTitle>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
@@ -51,6 +58,5 @@ export default function MetricCards({ data }) {
         </Card>
       ))}
     </div>
-  )
+  );
 }
-

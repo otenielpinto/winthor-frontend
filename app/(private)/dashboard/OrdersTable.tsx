@@ -9,7 +9,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 
-export default function OrdersTable({ data }) {
+export default function OrdersTable({ data }: any) {
   if (!data || !data.recentOrders) return null;
   let qtd = data.recentOrders.length;
 
@@ -34,7 +34,7 @@ export default function OrdersTable({ data }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.recentOrders.map((order) => (
+            {data?.recentOrders.map((order: any) => (
               <TableRow key={order.id}>
                 <TableCell>
                   <Link href={`/orders/${order.slug}`}>

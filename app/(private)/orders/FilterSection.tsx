@@ -68,7 +68,7 @@ export function FilterSection({
   };
 
   const handleClearFilters = () => {
-    const clearedFilters = {
+    const clearedFilters: any = {
       numero: "",
       startDate: null,
       endDate: null,
@@ -111,7 +111,7 @@ export function FilterSection({
               <Calendar
                 mode="single"
                 selected={localFilters.startDate}
-                onSelect={(date) => handleDateChange("startDate", date)}
+                onSelect={(date: any) => handleDateChange("startDate", date)}
                 initialFocus
               />
             </PopoverContent>
@@ -137,7 +137,7 @@ export function FilterSection({
               <Calendar
                 mode="single"
                 selected={localFilters.endDate}
-                onSelect={(date) => handleDateChange("endDate", date)}
+                onSelect={(date: any) => handleDateChange("endDate", date)}
                 initialFocus
               />
             </PopoverContent>

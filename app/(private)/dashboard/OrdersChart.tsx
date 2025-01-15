@@ -1,8 +1,17 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function OrdersChart({ data }) {
-  if (!data || !data.ordersTrend) return null
+export default function OrdersChart({ data }: any) {
+  if (!data || !data.ordersTrend) return null;
 
   return (
     <Card>
@@ -17,11 +26,15 @@ export default function OrdersChart({ data }) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="orders" stroke="#ff9900" activeDot={{ r: 8 }} />
+            <Line
+              type="monotone"
+              dataKey="orders"
+              stroke="#ff9900"
+              activeDot={{ r: 8 }}
+            />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
-  )
+  );
 }
-

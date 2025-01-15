@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function FilterBar({ filters, setFilters }) {
+export default function FilterBar({ filters, setFilters }: any) {
   return (
     <div className="flex gap-4 mb-4">
       <Select

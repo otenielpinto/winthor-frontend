@@ -63,12 +63,13 @@ type Pedido = {
   obs: string;
 };
 
-export default function Page({ params }: { params: Promise<{ id: string }> }) {
-  const id = params?.id ? params.id : "";
+export default function Page({ params }: { params: { id: string } }) {
+  const id = params.id;
   const { data, isLoading, error } = useQuery<any>({
     queryKey: ["ordersById", id],
     queryFn: () => getOrderBySlug(id),
   });
+
   const [cepCliente, setCepCliente] = useState<string>(
     data?.pedido?.cliente?.cep
   );
@@ -102,14 +103,14 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       return;
     }
 
-    // Atualizar o pedido com o novo CEP
-    setPedido({
-      ...pedido,
-      cliente: {
-        ...pedido.cliente,
-        cep: cepCliente,
-      },
-    });
+    // // Atualizar o pedido com o novo CEP
+    // setPedido({
+    //   ...pedido,
+    //   cliente: {
+    //     ...pedido.cliente,
+    //     cep: cepCliente,
+    //   },
+    // });
 
     toast({
       title: "Sucesso",
@@ -139,6 +140,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       <ItensPedido
         itens={data.pedido.itens}
         onItemCodigoChange={handleItemCodigoChange}
+        onItemDelete={() => {}}
+        onItemAdd={() => {}}
       />
       <DadosEntrega endereco={data.pedido.endereco_entrega} />
       <OutrosDetalhes
