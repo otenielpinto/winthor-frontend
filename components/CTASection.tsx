@@ -19,7 +19,7 @@ export default function CTASection() {
           Fale com um especialista agora mesmo!
         </h2>
         <p className="text-xl mb-8">
-          Descubra como podemos otimizar sua integração Komache Connect com
+          Descubra como podemos otimizar sua integração WTA Connect com
           marketplaces.
         </p>
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">
@@ -43,7 +43,7 @@ export default function CTASection() {
         </form>
         <p className="mt-4 text-sm">Ou entre em contato via WhatsApp</p>
         <a
-          href="https://wa.me/5551998664776?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20a%20integração%20Komache%20HUB%20com%20marketplaces."
+          href="https://wa.me/5551998664776?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20a%20integração%20WTA%20Connect%20com%20marketplaces."
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block mt-2 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition duration-300"

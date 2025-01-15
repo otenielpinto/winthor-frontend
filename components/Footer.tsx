@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-between">
           <div className="w-full md:w-1/3 mb-6 md:mb-0">
-            <h3 className="text-lg font-semibold mb-2">Komache Connect</h3>
+            <h3 className="text-lg font-semibold mb-2">WTA Connect</h3>
             <p>Soluções de integração para o seu negócio</p>
           </div>
           <div className="w-full md:w-1/3 mb-6 md:mb-0">
@@ -42,7 +42,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-gray-700 mt-8 pt-8 text-center">
           <p>
-            &copy; {new Date().getFullYear()} Komache Connect. Todos os direitos
+            &copy; {new Date().getFullYear()} WTA Connect. Todos os direitos
             reservados.
           </p>
         </div>

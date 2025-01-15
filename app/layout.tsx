@@ -4,9 +4,8 @@ import { Toaster } from "@/components/ui/sonner";
 import ReactQueryProvider from "@/providers/react-query";
 
 export const metadata: Metadata = {
-  title: "Komache Software",
-  description:
-    "Komache Software: Inovando o futuro, uma linha de código por vez.",
+  title: "WTA Connect",
+  description: "WTA Software: Inovando o futuro, uma linha de código por vez.",
 };
 
 export default function RootLayout({
