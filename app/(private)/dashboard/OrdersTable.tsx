@@ -7,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function OrdersTable({ data }) {
   if (!data || !data.recentOrders) return null;
@@ -35,7 +36,13 @@ export default function OrdersTable({ data }) {
           <TableBody>
             {data.recentOrders.map((order) => (
               <TableRow key={order.id}>
-                <TableCell>{order.numero}</TableCell>
+                <TableCell>
+                  <Link href={`/orders/${order.slug}`}>
+                    <div className="text-blue-600 hover:underline">
+                      {order.numero}
+                    </div>
+                  </Link>
+                </TableCell>
                 <TableCell>{order.nome_ecommerce}</TableCell>
                 <TableCell>{order.numero_ecommerce}</TableCell>
                 <TableCell>{order.orderId}</TableCell>

@@ -3,6 +3,7 @@
 import { TMongo } from "@/infra/mongoClient";
 import { getUser } from "@/hooks/useUser";
 import { subDays, format } from "date-fns";
+import { ObjectId } from "mongodb";
 import { lib } from "@/lib/lib";
 import {
   Region,
@@ -48,9 +49,7 @@ function obterMessageWTA(wtaMessage: any) {
   return result;
 }
 
-export async function getDashboardPedidos(
-  filters: any
-): Promise<DashboardData> {
+export async function getDashboardOrders(filters: any): Promise<DashboardData> {
   const user: any = await getUser();
   let dt_movto = new Date();
   let days = 0;
@@ -147,6 +146,7 @@ export async function getDashboardPedidos(
       nome: order.pedido.cliente.nome,
       status_processo: order.status,
       orderId: order.orderId,
+      slug: order._id,
     } as Order);
 
     regionCounts[region]++;
@@ -187,7 +187,7 @@ export async function getDashboardPedidos(
   };
 }
 
-export async function getPedidos(filters: any): Promise<any> {
+export async function getOrders(filters: any): Promise<any> {
   const user: any = await getUser();
   let startDate = filters.startDate
     ? lib.setUTCHoursStart(filters.startDate)
@@ -229,6 +229,7 @@ export async function getPedidos(filters: any): Promise<any> {
       nome: order.pedido.cliente.nome,
       status_processo: order.status,
       orderId: order.orderId,
+      slug: order._id,
     } as Order);
   }
 
@@ -280,6 +281,24 @@ export async function deleteOrder(
     success: true,
     message: "Pedido excluído com sucesso " + order.numero,
   };
+}
+
+export async function getOrderBySlug(slug: string): Promise<any> {
+  const { client, clientdb } = await TMongo.connectToDatabase();
+  const order = await clientdb
+    .collection("order")
+    .findOne({ _id: new ObjectId(slug) });
+  await TMongo.mongoDisconnect(client);
+  if (!order) {
+    return null;
+  }
+
+  let status_wta = obterMessageWTA(order.wta_message);
+  let region: Region = lib.classifyRegion(order.pedido.cliente.uf) as Region;
+  order.region = region;
+  order.status_wta = status_wta;
+
+  return order;
 }
 
 //exemplo de como fiz uma atualização no campo dt_movto

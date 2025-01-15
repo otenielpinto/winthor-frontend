@@ -58,6 +58,7 @@ export interface Order {
   nome: string;
   status_processo?: number;
   orderId?: string;
+  slug?: any;
 }
 
 export interface FiltersOrder {

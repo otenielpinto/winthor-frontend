@@ -10,7 +10,7 @@ import FilterBar from "./FilterBar";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 import { Loader2 } from "lucide-react";
-import { getDashboardPedidos } from "@/actions/actPedidos";
+import { getDashboardOrders } from "@/actions/actPedidos";
 
 export default async function Dashboard() {
   const [filters, setFilters] = useState({
@@ -21,7 +21,7 @@ export default async function Dashboard() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboardData", filters],
-    queryFn: async () => await getDashboardPedidos(filters),
+    queryFn: async () => await getDashboardOrders(filters),
     refetchInterval: 8 * 60 * 1000, // Atualizar dados a cada 6 minutos
   });
 

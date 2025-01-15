@@ -1,5 +1,6 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
@@ -88,6 +89,14 @@ export const columns: ColumnDef<Order>[] = [
   },
 
   {
+    accessorKey: "slug",
+    header: "slug",
+    meta: {
+      isVisible: false,
+    },
+  },
+
+  {
     id: "actions",
     cell: ({ row }) => {
       const order: any = row.original;
@@ -110,6 +119,12 @@ export const columns: ColumnDef<Order>[] = [
         });
       };
 
+      const handleEdit = () => {
+        startTransition(async () => {
+          redirect(`/orders/${order.slug}`);
+        });
+      };
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -126,7 +141,7 @@ export const columns: ColumnDef<Order>[] = [
               Copy Nº do Pedido
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEdit}>
               <Pencil className="mr-2 h-4 w-4" />
               Editar
             </DropdownMenuItem>

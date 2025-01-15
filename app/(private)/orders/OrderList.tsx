@@ -7,7 +7,7 @@ import { columns } from "./columns";
 import { FilterSection } from "./FilterSection";
 import { Button } from "@/components/ui/button";
 import { Order } from "./orderTypes";
-import { getPedidos } from "@/actions/actPedidos";
+import { getOrders } from "@/actions/actPedidos";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
 
@@ -25,7 +25,7 @@ export default function OrderList() {
 
   const { data, isLoading, error } = useQuery<Order[]>({
     queryKey: ["orders", filters],
-    queryFn: () => getPedidos(filters),
+    queryFn: () => getOrders(filters),
   });
 
   const handleFilterChange = (newFilters: Partial<FiltersOrder>) => {
