@@ -2,9 +2,10 @@
 import * as bcryptjs from "bcryptjs";
 import { redirect } from "next/navigation";
 import AuthService from "@/auth/util";
-import { getUserByEmail, createUser } from "@/auth/services";
+
 import { User } from "@/auth/types/user";
-import { ActivitySquare } from "lucide-react";
+import { TAuthMongo } from "@/auth/infra/mongoClient";
+import { v4 as uuidv4 } from "uuid";
 
 export async function createAccount(formData: FormData) {
   const name = formData.get("name") as string;
@@ -52,5 +53,78 @@ export async function login(formData: FormData) {
     empresa: user.emp_acesso[0] ? user.emp_acesso[0] : 0,
   });
 
-  redirect(process.env.NEXT_PUBLIC_KOMACHE_AFTER_SIGN_IN_URL || "/home");
+  redirect(
+    (process.env.NEXT_PUBLIC_KOMACHE_AFTER_SIGN_IN_URL as string) || "/home"
+  );
+}
+
+export async function getUsers() {
+  const { client, clientdb } = await TAuthMongo.connectToDatabase();
+  const response = await clientdb.collection("user").find().toArray();
+  await TAuthMongo.mongoDisconnect(client);
+  return response;
+}
+
+export async function createUser(body: User): Promise<any> {
+  let email = body?.email ? body?.email : "email";
+  let password = body?.password;
+  let name = body?.name ? body?.name : uuidv4();
+
+  let query = { email };
+  const { client, clientdb } = await TAuthMongo.connectToDatabase();
+  let response: any = await clientdb.collection("user").findOne(query);
+
+  if (!response) {
+    let salt = await bcryptjs.genSalt(10);
+    let hashPassword = bcryptjs.hashSync(password, salt);
+
+    let user: User = {
+      id: uuidv4(),
+      email,
+      name,
+      active: 0,
+      isAdmin: 0,
+      password: hashPassword,
+      codigo: name,
+      emp_acesso: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    response = await clientdb.collection("user").insertOne(user);
+  }
+
+  await TAuthMongo.mongoDisconnect(client);
+  return response;
+}
+
+export async function getUserByEmail(email: any): Promise<any> {
+  //Usando o verbo POST para poder enviar os dados via body
+  let admin_email = process.env.NEXT_AUTH_ADMIN_EMAIL as string;
+  let admin_password = process.env.NEXT_AUTH_ADMIN_PASSWORD as string;
+
+  let active = 1;
+  let query = { email, active };
+  const { client, clientdb } = await TAuthMongo.connectToDatabase();
+  let response: any = await clientdb.collection("user").findOne(query);
+
+  //mover isso para o create route
+  if (!response && email == admin_email) {
+    let salt = await bcryptjs.genSalt(10);
+
+    let user: User = {
+      id: uuidv4(),
+      email,
+      name: "Admin",
+      active: 1,
+      isAdmin: 1,
+      password: bcryptjs.hashSync(admin_password, salt),
+      codigo: uuidv4(),
+      emp_acesso: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    response = await clientdb.collection("user").insertOne(user);
+  }
+  await TAuthMongo.mongoDisconnect(client);
+  return response;
 }

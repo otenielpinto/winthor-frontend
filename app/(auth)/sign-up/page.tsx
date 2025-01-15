@@ -8,9 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { authSchema, TAuthSchema } from "@/auth/schema/authSchema";
 import { useRouter } from "next/navigation";
-import { createUser } from "@/auth/services";
+import { authSchema, TAuthSchema } from "@/auth/schema/authSchema";
+import { createUser } from "@/auth/actions/auth-actions";
 import { User } from "@/auth/types/user";
 import { toast } from "sonner";
 
