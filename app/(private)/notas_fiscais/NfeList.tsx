@@ -16,7 +16,7 @@ export default function NfeList() {
     endDate: currentDate,
     ecommerceNumber: "",
     orderId: "",
-    status: "",
+    status: "NFe emitida",
     nome_cliente: "",
   });
 

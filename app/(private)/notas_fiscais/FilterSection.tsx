@@ -74,7 +74,7 @@ export function FilterSection({
       endDate: null,
       orderId: "",
       ecommerceNumber: "",
-      status: "",
+      status: "NFe emitida",
       nome_cliente: "",
     };
     setLocalFilters(clearedFilters);
@@ -173,7 +173,10 @@ export function FilterSection({
           onChange={handleInputChange}
         />
 
-        <Select onValueChange={handleStatusChange} value={"NFe emitida" || ""}>
+        <Select
+          onValueChange={handleStatusChange}
+          value={localFilters.status || ""}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Selecione o Status" />
           </SelectTrigger>

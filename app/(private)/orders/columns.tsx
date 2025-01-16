@@ -12,12 +12,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Order } from "./orderTypes";
 import { deleteOrder } from "@/actions/actPedidos";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
-export const columns: ColumnDef<Order>[] = [
+export const columns: ColumnDef<any>[] = [
   {
     accessorKey: "id",
     header: "Codigo interno",
