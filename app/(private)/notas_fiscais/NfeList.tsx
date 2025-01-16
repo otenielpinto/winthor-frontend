@@ -1,15 +1,13 @@
 "use client";
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { DataTable } from "./DataTable";
-import { columns } from "./columns";
 import { FilterSection } from "./FilterSection";
-import { getOrders } from "@/actions/actPedidos";
+import { getOrdersByNfe } from "@/actions/actPedidos";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
+import NfeTable from "./NfeTable";
 
-export default function OrderList() {
+export default function NfeList() {
   const currentDate = new Date();
 
   const [filters, setFilters] = useState<FiltersOrder>({
@@ -19,11 +17,12 @@ export default function OrderList() {
     ecommerceNumber: "",
     orderId: "",
     status: "",
+    nome_cliente: "",
   });
 
   const { data, isLoading, error } = useQuery<any[]>({
-    queryKey: ["orders", filters],
-    queryFn: () => getOrders(filters),
+    queryKey: ["getOrdersByNfe", filters],
+    queryFn: () => getOrdersByNfe(filters),
   });
 
   const handleFilterChange = (newFilters: Partial<FiltersOrder>) => {
@@ -46,16 +45,12 @@ export default function OrderList() {
         isLoading={isLoading}
       />
 
-      <div className="text-right">
-        Total de registros: {data ? data.length : 0}
-      </div>
-
       {isLoading ? (
         <div className="flex justify-center items-center h-screen">
           <Loader2 className="h-24 w-24 animate-spin" /> Carregando...
         </div>
       ) : (
-        <DataTable columns={columns} data={data || []} />
+        <NfeTable data={data || []} />
       )}
     </div>
   );

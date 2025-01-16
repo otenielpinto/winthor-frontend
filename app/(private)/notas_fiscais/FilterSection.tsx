@@ -173,18 +173,11 @@ export function FilterSection({
           onChange={handleInputChange}
         />
 
-        <Select
-          onValueChange={handleStatusChange}
-          value={localFilters.status || ""}
-        >
+        <Select onValueChange={handleStatusChange} value={"NFe emitida" || ""}>
           <SelectTrigger>
             <SelectValue placeholder="Selecione o Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem key={"todos"} value={"Todos"}>
-              {"Todos"}
-            </SelectItem>
-
             {statusOptions.map((status) => (
               <SelectItem key={status} value={status}>
                 {status}

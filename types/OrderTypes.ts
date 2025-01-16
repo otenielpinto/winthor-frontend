@@ -68,4 +68,5 @@ export interface FiltersOrder {
   ecommerceNumber: string;
   orderId: string;
   status?: string;
+  nome_cliente?: string;
 }

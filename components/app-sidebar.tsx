@@ -70,6 +70,11 @@ const data = {
           title: "Pedidos no ecommerce",
           url: "/orders",
         },
+
+        {
+          title: "Notas Fiscais",
+          url: "/notas_fiscais",
+        },
       ],
     },
     {

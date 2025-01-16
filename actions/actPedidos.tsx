@@ -49,6 +49,30 @@ function obterMessageWTA(wtaMessage: any) {
   return result;
 }
 
+export async function toOrdersMappers(rows: any): Promise<Order[]> {
+  let orders: Order[] = [];
+  for (let order of rows) {
+    let status_wta = obterMessageWTA(order.wta_message);
+    let region: Region = lib.classifyRegion(order.pedido.cliente.uf) as Region;
+
+    orders.push({
+      id: order.pedido.id,
+      numero: order.pedido.numero,
+      numero_ecommerce: order.pedido.numero_ecommerce,
+      nome_ecommerce: order.pedido.ecommerce.nomeEcommerce,
+      date: order.pedido.data_pedido,
+      status: `${statusToString(order.status)}\n ${status_wta}`,
+      value: Number(order.pedido.total_pedido),
+      region: region,
+      nome: order.pedido.cliente.nome,
+      status_processo: order.status,
+      orderId: order.orderId,
+      slug: order._id,
+    } as Order);
+  }
+  return orders;
+}
+
 export async function getDashboardOrders(filters: any): Promise<DashboardData> {
   const user: any = await getUser();
   let dt_movto = new Date();
@@ -205,6 +229,7 @@ export async function getOrders(filters: any): Promise<any> {
       numero_ecommerce: filters.ecommerceNumber,
     }),
     ...(filters.orderId && { orderId: filters.orderId }),
+    ...(filters.nome_cliente && { nome: filters.nome_cliente }),
   };
 
   const { client, clientdb } = await TMongo.connectToDatabase();
@@ -299,6 +324,37 @@ export async function getOrderBySlug(slug: string): Promise<any> {
   order.status_wta = status_wta;
 
   return order;
+}
+
+export async function getOrdersByNfe(filters: any): Promise<any> {
+  const user: any = await getUser();
+  let startDate = filters.startDate
+    ? lib.setUTCHoursStart(filters.startDate)
+    : null;
+  let endDate = filters.endDate ? lib.setUTCHoursEnd(filters.endDate) : null;
+  let status = Number(statusToCodigo(filters.status));
+  //**************************************************************** */
+  let query = {
+    idtenant: user.empresa,
+    data_envio_nfe: { $gte: startDate, $lte: endDate },
+    ...(status && status !== 0 && { status: status }),
+    ...(filters.numero && { numero: Number(filters.numero) }),
+    ...(filters.ecommerceNumber && {
+      numero_ecommerce: filters.ecommerceNumber,
+    }),
+    ...(filters.orderId && { orderId: filters.orderId }),
+    ...(filters.nome_cliente && { nome: filters.nome_cliente }),
+  };
+  console.log("query", query);
+
+  const { client, clientdb } = await TMongo.connectToDatabase();
+  let rows = await clientdb.collection("order").find(query).toArray();
+  //**************************************************************** */
+  await TMongo.mongoDisconnect(client);
+  let orders = await toOrdersMappers(rows);
+
+  //aplicar filtros
+  return orders;
 }
 
 //exemplo de como fiz uma atualização no campo dt_movto
