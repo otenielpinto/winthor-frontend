@@ -37,7 +37,7 @@ export default function Footer() {
           <div className="w-full md:w-1/3">
             <h3 className="text-lg font-semibold mb-2">Contato</h3>
             <p>oteniel.pinto@gmail.com</p>
-            <p>(51) 99866-47776</p>
+            <p>(51) 99866-4776</p>
           </div>
         </div>
         <div className="border-t border-gray-700 mt-8 pt-8 text-center">
