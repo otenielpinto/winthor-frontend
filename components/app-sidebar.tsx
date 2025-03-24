@@ -75,8 +75,18 @@ const data = {
           title: "Notas Fiscais",
           url: "/notas_fiscais",
         },
+
+        {
+          title: "Checkout NFe",
+          url: "/checkout/nfe",
+        },
+        {
+          title: "NFe Pendente",
+          url: "/checkout/nfe_pendente",
+        },
       ],
     },
+
     {
       title: "Suporte",
       url: "#",

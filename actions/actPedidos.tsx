@@ -333,6 +333,8 @@ export async function getOrdersByNfe(filters: any): Promise<any> {
     : null;
   let endDate = filters.endDate ? lib.setUTCHoursEnd(filters.endDate) : null;
   let status = Number(statusToCodigo(filters.status));
+  let checkout_status = Number(filters.checkout_status);
+
   //**************************************************************** */
   let query = {
     idtenant: user.empresa,
@@ -345,7 +347,10 @@ export async function getOrdersByNfe(filters: any): Promise<any> {
     ...(filters.orderId && { orderId: filters.orderId }),
     ...(filters.nome_cliente && { nome: filters.nome_cliente }),
   };
-  console.log("query", query);
+
+  if (checkout_status != -1) {
+    query.checkout_status = checkout_status;
+  }
 
   const { client, clientdb } = await TMongo.connectToDatabase();
   let rows = await clientdb.collection("order").find(query).toArray();

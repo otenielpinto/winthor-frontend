@@ -1,11 +1,13 @@
 "use client";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FilterSection } from "./FilterSection";
+import { FilterSection } from "@/app/(private)/notas_fiscais/FilterSection";
+import NfeTable from "@/app/(private)/notas_fiscais/NfeTable";
+
 import { getOrdersByNfe } from "@/actions/actPedidos";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
-import NfeTable from "./NfeTable";
+const status_checkout_pendente = 0; // Pendente
 
 export default function NfeList() {
   const currentDate = new Date();
@@ -18,7 +20,7 @@ export default function NfeList() {
     orderId: "",
     status: "NFe emitida",
     nome_cliente: "",
-    checkout_status: -1, // Added checkout_status filter with empty string as default
+    checkout_status: status_checkout_pendente,
   });
 
   const { data, isLoading, error } = useQuery<any[]>({

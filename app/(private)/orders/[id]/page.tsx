@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DadosPedido } from "./DadosPedido";
 import { DadosCliente } from "./DadosCliente";
 import { ItensPedido } from "./ItensPedido";
 import { DadosEntrega } from "./DadosEntrega";
 import { OutrosDetalhes } from "./OutrosDetalhes";
+import { CheckoutDetails } from "./CheckoutDetails";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -61,6 +62,12 @@ type Pedido = {
   };
   nome_transportador: string;
   obs: string;
+  checkout: {
+    chave_acesso: string;
+    checkout_data: string;
+    checkout_status: string;
+    checkout_user: string;
+  };
 };
 
 export default function Page({ params }: { params: { id: string } }) {
@@ -70,9 +77,31 @@ export default function Page({ params }: { params: { id: string } }) {
     queryFn: () => getOrderBySlug(id),
   });
 
-  const [cepCliente, setCepCliente] = useState<string>(
-    data?.pedido?.cliente?.cep
-  );
+  const [cepCliente, setCepCliente] = useState<string>("");
+  const [checkoutData, setCheckoutData] = useState({
+    chave_acesso: "",
+    checkout_data: "",
+    checkout_status: "",
+    checkout_user: "",
+  });
+
+  // Update state when data is loaded
+  useEffect(() => {
+    if (data?.pedido) {
+      setCepCliente(data.pedido.cliente?.cep || "");
+
+      // Initialize checkout data from API response
+      if (data?.chave_acesso) {
+        setCheckoutData({
+          chave_acesso: data?.chave_acesso || "",
+          checkout_data: data?.checkout_data || "",
+          checkout_status: data?.checkout_status || "",
+          checkout_user: data?.checkout_user || "",
+        });
+      }
+    }
+  }, [data]);
+
   const handleCepChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCepCliente(e.target.value);
   };
@@ -144,6 +173,7 @@ export default function Page({ params }: { params: { id: string } }) {
         onItemAdd={() => {}}
       />
       <DadosEntrega endereco={data.pedido.endereco_entrega} />
+      <CheckoutDetails checkout={checkoutData} />
       <OutrosDetalhes
         formaPagamento={data.pedido.forma_pagamento}
         nomeEcommerce={data.pedido.ecommerce.nomeEcommerce}

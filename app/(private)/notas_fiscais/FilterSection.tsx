@@ -76,6 +76,7 @@ export function FilterSection({
       ecommerceNumber: "",
       status: "NFe emitida",
       nome_cliente: "",
+      checkout_status: -1,
     };
     setLocalFilters(clearedFilters);
     debounceFilterChange(clearedFilters);
@@ -188,6 +189,26 @@ export function FilterSection({
             ))}
           </SelectContent>
         </Select>
+
+        <div className="flex flex-col space-y-2">
+          <label htmlFor="checkout_status" className="font-medium text-sm">
+            Status Checkout
+          </label>
+          <select
+            id="checkout_status"
+            className="border rounded p-2 focus:ring-2 focus:ring-primary"
+            value={localFilters.checkout_status}
+            onChange={(e) =>
+              handleInputChange({
+                target: { name: "checkout_status", value: e.target.value },
+              } as React.ChangeEvent<HTMLInputElement>)
+            }
+          >
+            <option value={-1}>Todos</option>
+            <option value={0}>Pendente</option>
+            <option value={1}>Processado</option>
+          </select>
+        </div>
       </div>
       <div className="flex space-x-2">
         <Button onClick={handleClearFilters}>Limpar Filtros</Button>

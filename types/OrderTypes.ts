@@ -69,4 +69,5 @@ export interface FiltersOrder {
   orderId: string;
   status?: string;
   nome_cliente?: string;
+  checkout_status?: number; // Added checkout_status filter
 }
