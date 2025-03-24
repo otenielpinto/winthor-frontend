@@ -75,6 +75,23 @@ export async function checkNfe(formData: FormData): Promise<CheckNfeResult> {
       // Get the collection
       const collection = clientdb.collection("order");
 
+      // First check if the NFE exists and has already been processed
+      const existingNfe = await collection.findOne({ chave_acesso });
+
+      if (existingNfe && existingNfe.checkout_status === 1) {
+        return {
+          success: false,
+          message: "NFE já foi processada anteriormente",
+          error: "NFE_ALREADY_PROCESSED",
+          data: {
+            chave_acesso: existingNfe.chave_acesso,
+            checkout_data: existingNfe.checkout_data,
+            checkout_user: existingNfe.checkout_user,
+            checkout_status: existingNfe.checkout_status,
+          },
+        };
+      }
+
       // Update or insert document
       const result = await collection.updateOne(
         { chave_acesso },
@@ -91,25 +108,25 @@ export async function checkNfe(formData: FormData): Promise<CheckNfeResult> {
       // Revalidate the page
       revalidatePath("/checkout/nfe");
 
-    // If no document was updated, then the key doesn't exist in the database
-    if (result.matchedCount === 0) {
-      return {
-        success: false,
-        message: "Chave de NFE não encontrada",
-        error: "NFE_NOT_FOUND",
-      };
-    }
+      // If no document was updated, then the key doesn't exist in the database
+      if (result.matchedCount === 0) {
+        return {
+          success: false,
+          message: "Chave de NFE não encontrada",
+          error: "NFE_NOT_FOUND",
+        };
+      }
 
-    return {
-      success: true,
-      message: "Chave de NFE atualizada com sucesso",
-      data: {
-        chave_acesso,
-        checkout_data,
-        checkout_user,
-        checkout_status,
-      },
-    };
+      return {
+        success: true,
+        message: "Chave de NFE atualizada com sucesso",
+        data: {
+          chave_acesso,
+          checkout_data,
+          checkout_user,
+          checkout_status,
+        },
+      };
     } finally {
       // Always close the MongoDB connection
       await TMongo.mongoDisconnect(client);

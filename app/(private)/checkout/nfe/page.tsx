@@ -26,7 +26,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { checkNfe } from "@/actions/actOrder";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CheckCircle2, XCircle, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
 
 const formSchema = z.object({
   chave_acesso: z
@@ -39,6 +39,7 @@ export default function CheckoutNFE() {
   const [isPending, startTransition] = useTransition();
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState<string | null>(null);
+  const [isAlreadyProcessed, setIsAlreadyProcessed] = useState(false);
   const [lastReadKey, setLastReadKey] = useState<{
     key: string;
     timestamp: string;
@@ -80,6 +81,7 @@ export default function CheckoutNFE() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setShowSuccess(false);
     setShowError(null);
+    setIsAlreadyProcessed(false);
 
     const formData = new FormData();
     formData.append("chave_acesso", values.chave_acesso);
@@ -108,16 +110,37 @@ export default function CheckoutNFE() {
         // Reset the form but don't hide success message immediately
         form.reset();
 
-        // Automatically hide success message after 3 seconds
+        // Automatically hide success message after 2 seconds
         setTimeout(() => {
           setShowSuccess(false);
-        }, 3000);
+        }, 2000);
       } else {
+        // Check if it's the specific error about already processed NFE
+        if (result.error === "NFE_ALREADY_PROCESSED") {
+          setIsAlreadyProcessed(true);
+
+          // Select the content of the input field when NFE is already processed
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.focus();
+              inputRef.current.select();
+            }
+          }, 0);
+        } else if (result.error === "NFE_NOT_FOUND") {
+          // Also select the content of the input field when NFE is not found
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.focus();
+              inputRef.current.select();
+            }
+          }, 0);
+        }
+
         setShowError(result.error || result.message);
         toast({
           title: "Erro na verificação",
           description: result.error || result.message,
-          variant: "destructive",
+          variant: isAlreadyProcessed ? "default" : "destructive",
         });
       }
     });
@@ -127,6 +150,7 @@ export default function CheckoutNFE() {
     form.reset();
     setShowSuccess(false);
     setShowError(null);
+    setIsAlreadyProcessed(false);
     inputRef.current?.focus();
   }
 
@@ -193,15 +217,27 @@ export default function CheckoutNFE() {
                 </AlertDescription>
               </Alert>
             ) : showError ? (
-              <Alert className="bg-red-50 border-red-200 mb-4">
-                <XCircle className="h-4 w-4 text-red-600" />
-                <AlertTitle className="text-red-800">
-                  Erro na Verificação
-                </AlertTitle>
-                <AlertDescription className="text-red-700">
-                  {showError}
-                </AlertDescription>
-              </Alert>
+              isAlreadyProcessed ? (
+                <Alert className="bg-amber-50 border-amber-200 mb-4">
+                  <AlertCircle className="h-4 w-4 text-amber-600" />
+                  <AlertTitle className="text-amber-800">
+                    NFE Já Processada
+                  </AlertTitle>
+                  <AlertDescription className="text-amber-700">
+                    Esta Nota Fiscal já foi processada anteriormente no sistema.
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <Alert className="bg-red-50 border-red-200 mb-4">
+                  <XCircle className="h-4 w-4 text-red-600" />
+                  <AlertTitle className="text-red-800">
+                    Erro na Verificação
+                  </AlertTitle>
+                  <AlertDescription className="text-red-700">
+                    {showError}
+                  </AlertDescription>
+                </Alert>
+              )
             ) : null}
 
             <Form {...form}>
@@ -222,6 +258,7 @@ export default function CheckoutNFE() {
                           className="font-mono text-sm"
                           disabled={isPending}
                           ref={inputRef}
+                          autoComplete="off"
                           onChange={(e) => {
                             // Only allow digits
                             const value = e.target.value.replace(/\D/g, "");
