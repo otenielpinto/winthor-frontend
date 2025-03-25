@@ -8,6 +8,7 @@ import { getOrdersByNfe } from "@/actions/actPedidos";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
 const status_checkout_pendente = 0; // Pendente
+const status_checkout_todos = -1; // Todos
 
 export default function NfeList() {
   const currentDate = new Date();
@@ -20,7 +21,8 @@ export default function NfeList() {
     orderId: "",
     status: "NFe emitida",
     nome_cliente: "",
-    checkout_status: status_checkout_pendente,
+    checkout_status: status_checkout_todos,
+    checkout_filter: "1",
   });
 
   const { data, isLoading, error } = useQuery<any[]>({

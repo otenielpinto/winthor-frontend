@@ -70,4 +70,5 @@ export interface FiltersOrder {
   status?: string;
   nome_cliente?: string;
   checkout_status?: number; // Added checkout_status filter
+  checkout_filter?: string; //serve para sinalizar que o filtro é para o checkout
 }

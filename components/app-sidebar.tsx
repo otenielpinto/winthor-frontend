@@ -81,8 +81,8 @@ const data = {
           url: "/checkout/nfe",
         },
         {
-          title: "NFe Pendente",
-          url: "/checkout/nfe_pendente",
+          title: "Registro de Pacotes",
+          url: "/checkout/nfe_registro_cargas",
         },
       ],
     },

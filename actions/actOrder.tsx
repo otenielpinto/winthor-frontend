@@ -21,7 +21,7 @@ type CheckNfeResult = {
   message: string;
   data?: {
     chave_acesso: string;
-    checkout_data: string;
+    checkout_data: any;
     checkout_user: string;
     checkout_status: number;
   };
@@ -53,7 +53,7 @@ export async function checkNfe(formData: FormData): Promise<CheckNfeResult> {
     // Get current date for Brazil timezone (GMT-3)
     const now = new Date();
     const brasilDate = new Date(now.getTime() - 3 * 60 * 60 * 1000);
-    const checkout_data = brasilDate.toISOString();
+    const checkout_data = brasilDate;
 
     // Get user information
     const user = await getUser();

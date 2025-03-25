@@ -334,6 +334,9 @@ export async function getOrdersByNfe(filters: any): Promise<any> {
   let endDate = filters.endDate ? lib.setUTCHoursEnd(filters.endDate) : null;
   let status = Number(statusToCodigo(filters.status));
   let checkout_status = Number(filters.checkout_status);
+  let checkout_filter = filters.checkout_filter
+    ? filters.checkout_filter
+    : null;
 
   //**************************************************************** */
   let query = {
@@ -347,6 +350,11 @@ export async function getOrdersByNfe(filters: any): Promise<any> {
     ...(filters.orderId && { orderId: filters.orderId }),
     ...(filters.nome_cliente && { nome: filters.nome_cliente }),
   };
+
+  if (checkout_filter === "1") {
+    delete query.data_envio_nfe;
+    query.checkout_data = { $gte: startDate, $lte: endDate };
+  }
 
   if (checkout_status != -1) {
     query.checkout_status = checkout_status;
