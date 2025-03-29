@@ -8,26 +8,10 @@ import { lib } from "@/lib/lib";
 import { getOrdersByNfe } from "@/actions/actPedidos";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
+import { RomaneioColeta } from "./romaneio/page";
 
 const status_checkout_pendente = 0; // Pendente
 const status_checkout_todos = -1; // Todos
-
-function NfeDataTable({ filters }: { filters: FiltersOrder }) {
-  const { data, error } = useQuery<any[]>({
-    queryKey: ["getNfePacotes", filters],
-    queryFn: () => getOrdersByNfe(filters),
-  });
-
-  if (error) {
-    return (
-      <div className="text-center text-red-500">
-        Error loading orders: {(error as Error).message}
-      </div>
-    );
-  }
-
-  return <NfeTable data={data || []} />;
-}
 
 function LoadingFallback() {
   return (
@@ -56,16 +40,29 @@ export default function NfeList() {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
+  const { data, error, isLoading } = useQuery<any[]>({
+    queryKey: ["getNfePacotes", filters],
+    queryFn: () => getOrdersByNfe(filters),
+  });
+
+  if (error) {
+    return (
+      <div className="text-center text-red-500">
+        Error loading orders: {(error as Error).message}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <FilterSection
         filters={filters}
         onFilterChange={handleFilterChange}
-        isLoading={false}
+        isLoading={isLoading}
       />
 
       <Suspense fallback={<LoadingFallback />}>
-        <NfeDataTable filters={filters} />
+        <NfeTable data={data || []} />;
       </Suspense>
     </div>
   );
