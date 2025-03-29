@@ -13,6 +13,46 @@ import { useQuery } from "@tanstack/react-query";
 import { getOrderBySlug } from "@/actions/actPedidos";
 import { Loader2 } from "lucide-react";
 
+// Utility function to safely format dates
+const formatDate = (dateValue: string | Date | null | undefined): string => {
+  if (!dateValue) return "";
+
+  // If it's already a string, return it
+  if (typeof dateValue === "string") return dateValue;
+
+  // If it's a Date object, format it to string
+  try {
+    return dateValue instanceof Date
+      ? dateValue.toISOString().split("T")[0]
+      : "";
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "";
+  }
+};
+
+// Utility function to extract time from date
+const extractTime = (dateValue: string | Date | null | undefined): string => {
+  if (!dateValue) return "";
+
+  // If it's a string, try to parse it
+  if (typeof dateValue === "string") {
+    // Check if the string contains time information
+    const timeMatch = dateValue.match(/\d{2}:\d{2}(:\d{2})?/);
+    return timeMatch ? timeMatch[0] : "";
+  }
+
+  // If it's a Date object, extract time
+  try {
+    return dateValue instanceof Date
+      ? dateValue.toTimeString().split(" ")[0].substring(0, 5) // HH:MM format
+      : "";
+  } catch (error) {
+    console.error("Error extracting time:", error);
+    return "";
+  }
+};
+
 // Tipo para o objeto pedido
 type Pedido = {
   numero: string;
@@ -90,11 +130,13 @@ export default function Page({ params }: { params: { id: string } }) {
     if (data?.pedido) {
       setCepCliente(data.pedido.cliente?.cep || "");
 
-      // Initialize checkout data from API response
+      // Initialize checkout data from API response and format date values
       if (data?.chave_acesso) {
         setCheckoutData({
           chave_acesso: data?.chave_acesso || "",
-          checkout_data: data?.checkout_data || "",
+          checkout_data: data?.checkout_data
+            ? `${data.checkout_data.toISOString()} `
+            : "",
           checkout_status: data?.checkout_status || "",
           checkout_user: data?.checkout_user || "",
         });

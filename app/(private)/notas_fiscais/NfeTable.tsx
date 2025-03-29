@@ -12,7 +12,7 @@ import { getUser } from "@/hooks/useUser";
 import { useQuery } from "@tanstack/react-query";
 
 export default function NfeTable({ data }: any) {
-  if (!data || !data) return null;
+  if (!data) return null;
 
   const { data: user, error } = useQuery<any>({
     queryKey: ["getUserNfeTable"],
@@ -21,10 +21,10 @@ export default function NfeTable({ data }: any) {
 
   let admin = user?.isAdmin == 1;
   let qtd = data?.length || 0;
-  let sumOfValor = data.reduce(
-    (acc: number, order: any) => acc + order.value,
-    0
-  );
+  let sumOfValor = 0;
+  if (admin) {
+    sumOfValor = data.reduce((acc: number, order: any) => acc + order.value, 0);
+  }
 
   return (
     <Card>
