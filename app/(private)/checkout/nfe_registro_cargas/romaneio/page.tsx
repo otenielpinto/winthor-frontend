@@ -51,6 +51,9 @@ const FormattedTime: React.FC<{ date: Date }> = ({ date }) => {
 };
 
 function RomaneioColeta({ data }: any) {
+  if (!data || data.length === 0) {
+    return <div>Sem dados para exibir.</div>;
+  }
   const componentRef = useRef<HTMLDivElement>(null);
   // State to ensure consistent dates
   const [formattedDate, setFormattedDate] = useState<string>("");
@@ -59,7 +62,7 @@ function RomaneioColeta({ data }: any) {
   let statusColeta = "em trânsito";
   let numeroEcommerce = "";
   // Add item sequence to each data entry
-  for (let i = 0; i < data.length; i++) {
+  for (let i = 0; i < data?.length; i++) {
     // Add item sequence number (1-based index)
     data[i].item = i + 1;
   }

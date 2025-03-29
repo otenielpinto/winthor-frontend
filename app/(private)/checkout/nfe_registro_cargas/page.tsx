@@ -4,11 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { FilterSection } from "@/app/(private)/notas_fiscais/FilterSection";
 import NfeTable from "@/app/(private)/notas_fiscais/NfeTable";
 import { lib } from "@/lib/lib";
+import { Button } from "@/components/ui/button";
 
 import { getOrdersByNfe } from "@/actions/actPedidos";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
-import { RomaneioColeta } from "./romaneio/page";
+import RomaneioColeta from "./romaneio/page";
 
 const status_checkout_pendente = 0; // Pendente
 const status_checkout_todos = -1; // Todos
@@ -23,6 +24,7 @@ function LoadingFallback() {
 
 export default function NfeList() {
   const currentDate = lib.dateToBr();
+  const [showRomaneio, setShowRomaneio] = useState(false);
 
   const [filters, setFilters] = useState<FiltersOrder>({
     numero: "",
@@ -55,15 +57,31 @@ export default function NfeList() {
 
   return (
     <div className="space-y-4">
-      <FilterSection
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        isLoading={isLoading}
-      />
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Registro de Pacotes</h2>
+        <Button
+          onClick={() => setShowRomaneio(!showRomaneio)}
+          variant="default"
+        >
+          {showRomaneio ? "Voltar" : "Abrir Romaneio"}
+        </Button>
+      </div>
 
-      <Suspense fallback={<LoadingFallback />}>
-        <NfeTable data={data || []} />;
-      </Suspense>
+      {showRomaneio ? (
+        <RomaneioColeta data={data || []} />
+      ) : (
+        <>
+          <FilterSection
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            isLoading={isLoading}
+          />
+
+          <Suspense fallback={<LoadingFallback />}>
+            <NfeTable data={data || []} />
+          </Suspense>
+        </>
+      )}
     </div>
   );
 }
