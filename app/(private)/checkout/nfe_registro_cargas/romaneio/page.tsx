@@ -78,15 +78,9 @@ function RomaneioColeta({ data }: any) {
     );
   }, [dataHoraColeta]);
 
-  const handlePrint = useReactToPrint({
+  const handlePrint: any = useReactToPrint({
     documentTitle: `Romaneio_Coleta_${idColeta}`,
     contentRef: componentRef,
-    onBeforeGetContent: () => {
-      return new Promise<void>((resolve) => {
-        resolve();
-      });
-    },
-    removeAfterPrint: true,
   });
 
   const status = getStatusLabel(statusColeta);
