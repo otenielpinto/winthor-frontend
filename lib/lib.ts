@@ -48,8 +48,16 @@ function setUTCHoursEnd(date?: Date): Date {
   return lDate;
 }
 
+function dateToBr() {
+  // Get current date for Brazil timezone (GMT-3)
+  const now = new Date();
+  const brasilDate = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+  return brasilDate;
+}
+
 export const lib = {
   classifyRegion,
   setUTCHoursStart,
   setUTCHoursEnd,
+  dateToBr,
 };

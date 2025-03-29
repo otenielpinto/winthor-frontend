@@ -8,9 +8,18 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { getUser } from "@/hooks/useUser";
+import { useQuery } from "@tanstack/react-query";
 
 export default function NfeTable({ data }: any) {
   if (!data || !data) return null;
+
+  const { data: user, error } = useQuery<any>({
+    queryKey: ["getUserNfeTable"],
+    queryFn: () => getUser(),
+  });
+
+  let admin = user?.isAdmin == 1;
   let qtd = data?.length || 0;
   let sumOfValor = data.reduce(
     (acc: number, order: any) => acc + order.value,
@@ -20,9 +29,11 @@ export default function NfeTable({ data }: any) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{`Notas Fiscais (${qtd})  --> R$ ${sumOfValor.toFixed(
-          2
-        )}`}</CardTitle>
+        <CardTitle>
+          {admin
+            ? `Notas Fiscais (${qtd})  --> R$ ${sumOfValor.toFixed(2)}`
+            : `Notas Fiscais (${qtd})`}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
