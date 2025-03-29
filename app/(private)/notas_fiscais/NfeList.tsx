@@ -1,14 +1,15 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FilterSection } from "./FilterSection";
 import { getOrdersByNfe } from "@/actions/actPedidos";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
 import NfeTable from "./NfeTable";
+import { lib } from "@/lib/lib";
 
 export default function NfeList() {
-  const currentDate = new Date();
+  const currentDate = lib.dateToBr();
 
   const [filters, setFilters] = useState<FiltersOrder>({
     numero: "",
@@ -46,13 +47,19 @@ export default function NfeList() {
         isLoading={isLoading}
       />
 
-      {isLoading ? (
+      <Suspense fallback={<Loader2 className="h-24 w-24 animate-spin" />}>
+        <NfeTable data={data || []} />
+      </Suspense>
+
+      {/* {isLoading ? (
         <div className="flex justify-center items-center h-screen">
           <Loader2 className="h-24 w-24 animate-spin" /> Carregando...
         </div>
       ) : (
-        <NfeTable data={data || []} />
-      )}
+        <Suspense fallback={<Loader2 className="h-24 w-24 animate-spin" />}>
+          <NfeTable data={data || []} />
+        </Suspense>
+      )} */}
     </div>
   );
 }
