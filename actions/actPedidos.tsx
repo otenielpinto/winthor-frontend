@@ -59,7 +59,7 @@ export async function toOrdersMappers(rows: any): Promise<Order[]> {
       id: order.pedido.id,
       numero: order.pedido.numero,
       numero_ecommerce: order.pedido.numero_ecommerce,
-      nome_ecommerce: order.pedido.ecommerce.nomeEcommerce,
+      nome_ecommerce: order?.pedido?.ecommerce?.nomeEcommerce,
       date: order.pedido.data_pedido,
       status: `${statusToString(order.status)}\n ${status_wta}`,
       value: Number(order.pedido.total_pedido),
@@ -162,7 +162,7 @@ export async function getDashboardOrders(filters: any): Promise<DashboardData> {
       id: order.pedido.id,
       numero: order.pedido.numero,
       numero_ecommerce: order.pedido.numero_ecommerce,
-      nome_ecommerce: order.pedido.ecommerce.nomeEcommerce,
+      nome_ecommerce: order?.pedido?.ecommerce?.nomeEcommerce,
       date: order.pedido.data_pedido,
       status: `${statusToString(order.status)}\n ${status_wta}`,
       value: Number(order.pedido.total_pedido),
@@ -246,7 +246,7 @@ export async function getOrders(filters: any): Promise<any> {
       id: order.pedido.id,
       numero: order.pedido.numero,
       numero_ecommerce: order.pedido.numero_ecommerce,
-      nome_ecommerce: order.pedido.ecommerce.nomeEcommerce,
+      nome_ecommerce: order?.pedido?.ecommerce?.nomeEcommerce,
       date: order.pedido.data_pedido,
       status: `${statusToString(order.status)}\n ${status_wta}`,
       value: Number(order.pedido.total_pedido),
@@ -254,7 +254,7 @@ export async function getOrders(filters: any): Promise<any> {
       nome: order.pedido.cliente.nome,
       status_processo: order.status,
       orderId: order.orderId,
-      slug: order._id,
+      slug: order._id.toString(),
     } as Order);
   }
 

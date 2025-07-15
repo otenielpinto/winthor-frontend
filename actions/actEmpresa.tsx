@@ -6,7 +6,10 @@ export async function getAllEmpresas() {
   const { client, clientdb } = await TMongo.connectToDatabase();
   const response = await clientdb.collection("empresa").find().toArray();
   await TMongo.mongoDisconnect(client);
-  return response;
+  return response.map((empresa) => ({
+    ...empresa,
+    _id: empresa._id.toString(),
+  }));
 }
 
 export async function getEmpresaById(id: Number) {
@@ -15,7 +18,10 @@ export async function getEmpresaById(id: Number) {
     .collection("empresa")
     .findOne({ id: Number(id) });
   await TMongo.mongoDisconnect(client);
-  return response;
+  return {
+    ...response,
+    _id: response?._id.toString() || null,
+  };
 }
 
 export async function createEmpresa(data: any) {
@@ -49,5 +55,9 @@ export async function getEmpresaByCnpj(cnpj: String) {
     .collection("empresa")
     .findOne({ cpfcnpj: cnpj });
   await TMongo.mongoDisconnect(client);
-  return response;
+
+  return {
+    ...response,
+    _id: response?._id.toString() || null,
+  };
 }
