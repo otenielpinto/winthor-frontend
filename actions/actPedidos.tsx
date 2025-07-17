@@ -230,6 +230,10 @@ export async function getOrders(filters: any): Promise<any> {
     ...(filters.nome_cliente && { nome: filters.nome_cliente }),
   };
 
+  if (query.numero) {
+    delete query.dt_movto;
+  }
+
   const { client, clientdb } = await TMongo.connectToDatabase();
   let rows = await clientdb.collection("order").find(query).toArray();
   //**************************************************************** */
