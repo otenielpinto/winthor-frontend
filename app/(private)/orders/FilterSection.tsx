@@ -12,7 +12,6 @@ import {
 import { CalendarIcon, Search } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useDebounce } from "@/hooks/use-debounce";
 import { FiltersOrder, statusOptions } from "@/types/OrderTypes";
 import {
   Select,
@@ -40,50 +39,36 @@ export function FilterSection({
     endDate: filters.endDate || currentDate,
   });
 
-  const [debouncedFilters, debounceFilterChange] = useDebounce(
-    localFilters,
-    300
-  );
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const newFilters = { ...localFilters, [name]: value };
-    setLocalFilters(newFilters);
-    debounceFilterChange(newFilters);
+    setLocalFilters((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleDateChange = (
     field: "startDate" | "endDate",
     value: Date | null
   ) => {
-    const newFilters = { ...localFilters, [field]: value };
-    setLocalFilters(newFilters);
-    debounceFilterChange(newFilters);
+    setLocalFilters((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleStatusChange = (value: string) => {
-    const newFilters = { ...localFilters, status: value };
-    setLocalFilters(newFilters);
-    debounceFilterChange(newFilters);
+    setLocalFilters((prev) => ({ ...prev, status: value }));
   };
 
   const handleClearFilters = () => {
     const clearedFilters: any = {
       numero: "",
-      startDate: null,
-      endDate: null,
+      startDate: currentDate,
+      endDate: currentDate,
       orderId: "",
       ecommerceNumber: "",
       status: "",
       nome_cliente: "",
     };
     setLocalFilters(clearedFilters);
-    debounceFilterChange(clearedFilters);
   };
 
   const handleSubmitFilters = () => {
-    const newFilters = { ...localFilters, ["uuid"]: Math.random() };
-    setLocalFilters(newFilters);
     onFilterChange(localFilters);
   };
 
@@ -194,10 +179,12 @@ export function FilterSection({
         </Select>
       </div>
       <div className="flex space-x-2">
-        <Button onClick={handleClearFilters}>Limpar Filtros</Button>
+        <Button onClick={handleClearFilters} variant="outline">
+          Limpar Filtros
+        </Button>
         <Button onClick={handleSubmitFilters} disabled={isLoading}>
           <Search className="mr-2 h-4 w-4" />
-          Enviar
+          {isLoading ? "Buscando..." : "Enviar"}
         </Button>
       </div>
     </div>

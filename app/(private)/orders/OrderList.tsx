@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { DataTable } from "./DataTable";
 import { columns } from "./columns";
@@ -11,6 +11,8 @@ import { Loader2 } from "lucide-react";
 
 export default function OrderList() {
   const currentDate = new Date();
+  const [hasSearched, setHasSearched] = useState(false);
+  const [searchTrigger, setSearchTrigger] = useState(0);
 
   const [filters, setFilters] = useState<FiltersOrder>({
     numero: "",
@@ -21,13 +23,18 @@ export default function OrderList() {
     status: "",
   });
 
-  const { data, isLoading, error } = useQuery<any[]>({
-    queryKey: ["orders", filters],
+  const { data, isLoading, error, refetch } = useQuery<any[]>({
+    queryKey: ["orders", filters, searchTrigger],
     queryFn: () => getOrders(filters),
+    enabled: searchTrigger > 0, // Só executa quando searchTrigger > 0
   });
 
   const handleFilterChange = (newFilters: Partial<FiltersOrder>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
+    const updatedFilters = { ...filters, ...newFilters };
+    setFilters(updatedFilters);
+    setHasSearched(true);
+    // Incrementa o trigger para forçar uma nova busca
+    setSearchTrigger((prev) => prev + 1);
   };
 
   if (error) {
@@ -46,16 +53,23 @@ export default function OrderList() {
         isLoading={isLoading}
       />
 
-      <div className="text-right">
-        Total de registros: {data ? data.length : 0}
-      </div>
+      {hasSearched && (
+        <div className="text-right">
+          Total de registros: {data ? data.length : 0}
+        </div>
+      )}
 
       {isLoading ? (
-        <div className="flex justify-center items-center h-screen">
-          <Loader2 className="h-24 w-24 animate-spin" /> Carregando...
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin mr-2" />
+          Carregando...
         </div>
-      ) : (
+      ) : hasSearched ? (
         <DataTable columns={columns} data={data || []} />
+      ) : (
+        <div className="text-center text-gray-500 py-8">
+          Configure os filtros e clique em "Enviar" para buscar os pedidos
+        </div>
       )}
     </div>
   );
