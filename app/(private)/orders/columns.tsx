@@ -15,11 +15,30 @@ import {
 import { deleteOrder } from "@/actions/actPedidos";
 import { useTransition } from "react";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const columns: ColumnDef<any>[] = [
   {
     accessorKey: "id",
     header: "Codigo interno",
+    cell: ({ row }) => {
+      const id = row.getValue("id") as string;
+
+      const handleClick = () => {
+        // Substitua esta URL pela URL desejada
+        const url = `https://erp.tiny.com.br/vendas#edit/${id}`;
+        window.open(url, "_blank");
+      };
+
+      return (
+        <button
+          onClick={handleClick}
+          className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+        >
+          {id}
+        </button>
+      );
+    },
   },
   {
     accessorKey: "numero",
@@ -87,19 +106,20 @@ export const columns: ColumnDef<any>[] = [
     header: "Região",
   },
 
-  {
-    accessorKey: "slug",
-    header: "slug",
-    meta: {
-      isVisible: false,
-    },
-  },
+  // {
+  //   accessorKey: "slug",
+  //   header: "slug",
+  //   meta: {
+  //     isVisible: false,
+  //   },
+  // },
 
   {
     id: "actions",
     cell: ({ row }) => {
       const order: any = row.original;
       const [isPending, startTransition] = useTransition();
+      const queryClient = useQueryClient();
 
       const handleDelete = async () => {
         startTransition(async () => {
@@ -107,8 +127,8 @@ export const columns: ColumnDef<any>[] = [
             const response = await deleteOrder(order.id);
             if (response.success) {
               toast.success(response.message);
-              // Refresh the data or update the UI
-              window.location.reload();
+              // Invalidate and refetch orders data instead of reloading page
+              await queryClient.invalidateQueries({ queryKey: ["orders"] });
             } else {
               toast.error(response.message);
             }
@@ -137,7 +157,7 @@ export const columns: ColumnDef<any>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(order?.numero)}
             >
-              Copy Nº do Pedido
+              Copy Codigo do Pedido
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleEdit}>
