@@ -8,15 +8,29 @@ import { FilterSection } from "./FilterSection";
 import { getOrders } from "@/actions/actPedidos";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
+import { subDays } from "date-fns";
+
+// Função para calcular a data anterior baseada no dia da semana
+const getPreviousWorkingDate = (date: Date): Date => {
+  const dayOfWeek = date.getDay(); // 0 = domingo, 1 = segunda, 2 = terça, etc.
+
+  if (dayOfWeek === 1) {
+    // Segunda-feira
+    return subDays(date, 3); // Subtrai 3 dias (volta para sexta-feira)
+  }
+
+  return subDays(date, 1); // Dias normais, subtrai 1 dia
+};
 
 export default function OrderList() {
   const currentDate = new Date();
+  const previousDate = getPreviousWorkingDate(currentDate);
   const [hasSearched, setHasSearched] = useState(false);
   const [searchTrigger, setSearchTrigger] = useState(0);
 
   const [filters, setFilters] = useState<FiltersOrder>({
     numero: "",
-    startDate: currentDate,
+    startDate: previousDate,
     endDate: currentDate,
     ecommerceNumber: "",
     orderId: "",

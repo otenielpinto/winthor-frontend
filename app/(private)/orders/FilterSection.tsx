@@ -10,7 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CalendarIcon, Search } from "lucide-react";
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import { FiltersOrder, statusOptions } from "@/types/OrderTypes";
 import {
@@ -33,6 +33,7 @@ export function FilterSection({
   isLoading,
 }: FilterSectionProps) {
   const currentDate = new Date();
+
   const [localFilters, setLocalFilters] = useState({
     ...filters,
     startDate: filters.startDate || currentDate,
