@@ -103,7 +103,41 @@ export const columns: ColumnDef<any>[] = [
 
   {
     accessorKey: "region",
-    header: "Região",
+    header: "Acoes",
+    cell: ({ row }) => {
+      const orderId = row.getValue("id") as string;
+      const [isPending, startTransition] = useTransition();
+      const queryClient = useQueryClient();
+
+      const handleRegionClick = () => {
+        startTransition(async () => {
+          try {
+            const response = await deleteOrder(orderId);
+            if (response.success) {
+              toast.success(response.message);
+              // Invalidate and refetch orders data instead of reloading page
+              await queryClient.invalidateQueries({ queryKey: ["orders"] });
+            } else {
+              toast.error(response.message);
+            }
+          } catch (e) {
+            toast.error("Erro ao reprocessar pedido");
+          }
+        });
+      };
+
+      return (
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={handleRegionClick}
+          disabled={isPending}
+          className="text-sm font-medium"
+        >
+          {isPending ? "Processando..." : "Reprocessar"}
+        </Button>
+      );
+    },
   },
 
   // {

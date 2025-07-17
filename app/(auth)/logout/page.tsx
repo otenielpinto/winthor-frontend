@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 /**
  * Página de logout com design minimalista e mensagem positiva
- * Aguarda 2 segundos e automaticamente finaliza a sessão do usuário
+ * Aguarda 1 segundos e automaticamente finaliza a sessão do usuário
  */
 export default function LogoutPage() {
   const [isLoggingOut, setIsLoggingOut] = useState(true);
@@ -19,7 +19,7 @@ export default function LogoutPage() {
      */
     const handleLogout = async () => {
       try {
-        // Aguarda 2 segundos antes de finalizar a sessão
+        // Aguarda 1 segundos antes de finalizar a sessão
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         // Finaliza a sessão do usuário via API route
