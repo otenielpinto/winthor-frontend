@@ -27,22 +27,20 @@ function obterMessageWTA(wtaMessage: any) {
     return "";
   }
 
+  // Verificar se wtaMessage é uma string
+  if (typeof wtaMessage === "string") {
+    return wtaMessage;
+  }
+
   let result: string = "";
 
   if (wtaMessage.detailedMessage) {
-    result =
-      `Código: ${wtaMessage.code}\n` +
-      `Mensagem: ${wtaMessage.detailedMessage}\n`;
+    result = `**${wtaMessage.detailedMessage}\n **`;
   }
 
   if (wtaMessage && wtaMessage.details && wtaMessage.details.length > 0) {
     wtaMessage.details.forEach((detail: any) => {
-      result =
-        result +
-        " " +
-        `Código: ${detail.code}\n` +
-        `Mensagem: ${detail.message}\n` +
-        `Mensagem detalhada: ${detail.detailedMessage}`;
+      result = result + " " + `*** ${detail.detailedMessage}***`;
     });
   }
 
@@ -67,7 +65,7 @@ export async function toOrdersMappers(rows: any): Promise<Order[]> {
       nome: order.pedido.cliente.nome,
       status_processo: order.status,
       orderId: order.orderId,
-      slug: order._id,
+      slug: order._id.toString(),
     } as Order);
   }
   return orders;
