@@ -74,7 +74,7 @@ export default function Dashboard() {
         <OrdersChart data={data} />
         <StatusPieChart data={data} />
       </div>
-      <OrdersTable data={data} />
+      {/* <OrdersTable data={data} /> */}
       <div className="flex justify-between items-center mt-4">
         <Button onClick={exportData}>Exportar Dados</Button>
         <div className="flex items-center text-red-500">
