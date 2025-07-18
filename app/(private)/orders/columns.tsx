@@ -109,6 +109,8 @@ export const columns: ColumnDef<any>[] = [
       const [isPending, startTransition] = useTransition();
       const queryClient = useQueryClient();
 
+      const statusProcesso = row.getValue("status_processo") as number;
+
       const handleRegionClick = () => {
         startTransition(async () => {
           try {
@@ -126,15 +128,23 @@ export const columns: ColumnDef<any>[] = [
         });
       };
 
+      const isProcessed = statusProcesso === 2 || statusProcesso === 3;
+      const isDisabled = isProcessed || isPending;
+
+      const getButtonText = () => {
+        if (isPending) return "Processando...";
+        return "Reprocessar";
+      };
+
       return (
         <Button
           variant="destructive"
           size="sm"
-          onClick={handleRegionClick}
-          disabled={isPending}
+          disabled={isDisabled}
+          onClick={!isProcessed ? handleRegionClick : undefined}
           className="text-sm font-medium"
         >
-          {isPending ? "Processando..." : "Reprocessar"}
+          {getButtonText()}
         </Button>
       );
     },

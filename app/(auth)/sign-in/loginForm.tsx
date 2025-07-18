@@ -70,7 +70,7 @@ export function LoginForm({
                   {...register("email")}
                   id="email"
                   type="email"
-                  placeholder="seunome@example.com"
+                  placeholder="informe seu email"
                   required
                 />
 
@@ -92,6 +92,7 @@ export function LoginForm({
                   {...register("password")}
                   id="password"
                   type="password"
+                  placeholder="informe sua senha"
                   required
                 />
 
