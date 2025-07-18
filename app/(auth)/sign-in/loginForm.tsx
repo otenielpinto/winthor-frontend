@@ -27,11 +27,7 @@ export function LoginForm({
 
   async function handleLogin(formData: FormData) {
     startTransition(async () => {
-      try {
-        await login(formData);
-      } catch (e) {
-        toast.error("Usuário ou senha inválidos");
-      }
+      await login(formData);
     });
   }
 
