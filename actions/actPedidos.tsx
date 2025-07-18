@@ -134,7 +134,7 @@ export async function getDashboardOrders(filters: any): Promise<DashboardData> {
 
   // Alimentar ordersTrend com os dados obtidos pela variável rows
   const ordersTrend: { date: string; orders: number }[] = rows.map((row) => ({
-    date: row._id.substring(0, 5),
+    date: row._id.toString().substring(0, 5),
     orders: row.orders,
   }));
   //**************************************************************** */
@@ -168,7 +168,7 @@ export async function getDashboardOrders(filters: any): Promise<DashboardData> {
       nome: order.pedido.cliente.nome,
       status_processo: order.status,
       orderId: order.orderId,
-      slug: order._id,
+      slug: order._id.toString(),
     } as Order);
 
     regionCounts[region]++;

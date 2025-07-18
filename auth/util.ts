@@ -21,7 +21,8 @@ async function createSessionToken(payload = {}) {
     .sign(secret);
   const { exp, role } = await openSessionToken(session);
 
-  cookies().set("session", session, {
+  const cookieStore = await cookies();
+  cookieStore.set("session", session, {
     expires: (exp as number) * 1000,
     path: "/",
     httpOnly: true,
@@ -29,7 +30,8 @@ async function createSessionToken(payload = {}) {
 }
 
 async function isSessionValid() {
-  const sessionCookie = cookies().get("session");
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("session");
 
   if (sessionCookie) {
     const { value } = sessionCookie;
@@ -43,7 +45,8 @@ async function isSessionValid() {
 }
 
 async function getSessionUser() {
-  const sessionCookie = cookies().get("session");
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("session");
   let user = null;
 
   if (sessionCookie) {
@@ -53,8 +56,9 @@ async function getSessionUser() {
   return user;
 }
 
-function destroySession() {
-  cookies().delete("session");
+async function destroySession() {
+  const cookieStore = await cookies();
+  cookieStore.delete("session");
 }
 
 const AuthService = {

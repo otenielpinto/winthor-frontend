@@ -12,7 +12,7 @@ import { AlertCircle } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { getDashboardOrders } from "@/actions/actPedidos";
 
-export default async function Dashboard() {
+export default function Dashboard() {
   const [filters, setFilters] = useState({
     period: "daily",
     status: "todos",
