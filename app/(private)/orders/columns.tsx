@@ -33,6 +33,7 @@ export const columns: ColumnDef<any>[] = [
       return (
         <button
           onClick={handleClick}
+          title="Abrir no ERP Tiny"
           className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
         >
           {id}
@@ -48,6 +49,24 @@ export const columns: ColumnDef<any>[] = [
   {
     accessorKey: "numero_ecommerce",
     header: "Numero do Ecommerce",
+    cell: ({ row }) => {
+      const numeroEcommerce = row.getValue("numero_ecommerce") as string;
+
+      const handleClick = () => {
+        const url = `https://www.mercadolivre.com.br/vendas/${numeroEcommerce}/detalhe`;
+        window.open(url, "_blank");
+      };
+
+      return (
+        <button
+          onClick={handleClick}
+          title="Abrir no Ecommerce Mercado Livre"
+          className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+        >
+          {numeroEcommerce}
+        </button>
+      );
+    },
   },
   {
     accessorKey: "nome_ecommerce",
@@ -106,10 +125,11 @@ export const columns: ColumnDef<any>[] = [
     header: "Acoes",
     cell: ({ row }) => {
       const orderId = row.getValue("id") as string;
+      const statusProcesso = row.getValue("status_processo") as number;
       const [isPending, startTransition] = useTransition();
       const queryClient = useQueryClient();
-
-      const statusProcesso = row.getValue("status_processo") as number;
+      const isProcessed = statusProcesso === 2 || statusProcesso === 3;
+      const isDisabled = isProcessed || isPending;
 
       const handleRegionClick = () => {
         startTransition(async () => {
@@ -127,9 +147,6 @@ export const columns: ColumnDef<any>[] = [
           }
         });
       };
-
-      const isProcessed = statusProcesso === 2 || statusProcesso === 3;
-      const isDisabled = isProcessed || isPending;
 
       const getButtonText = () => {
         if (isPending) return "Processando...";
