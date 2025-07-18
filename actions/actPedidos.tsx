@@ -312,7 +312,7 @@ export async function deleteOrder(
 
 export async function getOrderBySlug(slug: string): Promise<any> {
   const { client, clientdb } = await TMongo.connectToDatabase();
-  const order = await clientdb
+  const order: any = await clientdb
     .collection("order")
     .findOne({ _id: new ObjectId(slug) });
   await TMongo.mongoDisconnect(client);
@@ -324,6 +324,7 @@ export async function getOrderBySlug(slug: string): Promise<any> {
   let region: Region = lib.classifyRegion(order.pedido.cliente.uf) as Region;
   order.region = region;
   order.status_wta = status_wta;
+  order._id = order._id.toString();
 
   return order;
 }

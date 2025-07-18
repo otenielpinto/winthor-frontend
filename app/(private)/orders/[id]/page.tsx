@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { DadosPedido } from "./DadosPedido";
 import { DadosCliente } from "./DadosCliente";
 import { ItensPedido } from "./ItensPedido";
@@ -110,12 +110,8 @@ type Pedido = {
   };
 };
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { data, isLoading, error } = useQuery<any>({
     queryKey: ["ordersById", id],
     queryFn: () => getOrderBySlug(id),
@@ -135,16 +131,15 @@ export default async function Page({
       setCepCliente(data.pedido.cliente?.cep || "");
 
       // Initialize checkout data from API response and format date values
-      if (data?.chave_acesso) {
-        setCheckoutData({
-          chave_acesso: data?.chave_acesso || "",
-          checkout_data: data?.checkout_data
-            ? `${data.checkout_data.toISOString()} `
-            : "",
-          checkout_status: data?.checkout_status || "",
-          checkout_user: data?.checkout_user || "",
-        });
-      }
+      // Access checkout data directly from the root of data object
+      setCheckoutData({
+        chave_acesso: data?.chave_acesso || "",
+        checkout_data: data?.checkout_data
+          ? formatDate(data.checkout_data)
+          : "",
+        checkout_status: data?.checkout_status || "",
+        checkout_user: data?.checkout_user || "",
+      });
     }
   }, [data]);
 
