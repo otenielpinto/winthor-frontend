@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteOrder } from "@/actions/pedidoAction";
+import { saveOrderEtapa } from "@/actions/orderEtapaAction";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -131,7 +132,7 @@ export const columns: ColumnDef<any>[] = [
       const isProcessed = statusProcesso === 2 || statusProcesso === 3;
       const isDisabled = isProcessed || isPending;
 
-      const handleRegionClick = () => {
+      const handleDeleteOrderClick = () => {
         startTransition(async () => {
           try {
             const response = await deleteOrder(orderId);
@@ -148,21 +149,51 @@ export const columns: ColumnDef<any>[] = [
         });
       };
 
+      const handleConfirm = () => {
+        startTransition(async () => {
+          try {
+            const response = await saveOrderEtapa(orderId);
+            if (response.success) {
+              //se o pedido foi confirmado, exclua o pedido
+              const response = await deleteOrder(orderId);
+              toast.success("Pedido confirmado com sucesso");
+              await queryClient.invalidateQueries({ queryKey: ["orders"] });
+            } else {
+              toast.error(response.message);
+            }
+          } catch (e) {
+            toast.error("Erro ao confirmar pedido");
+          }
+        });
+      };
+
       const getButtonText = () => {
         if (isPending) return "Processando...";
         return "Reprocessar";
       };
 
       return (
-        <Button
-          variant="destructive"
-          size="sm"
-          disabled={isDisabled}
-          onClick={!isProcessed ? handleRegionClick : undefined}
-          className="text-sm font-medium"
-        >
-          {getButtonText()}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="default"
+            size="sm"
+            disabled={isProcessed || isPending}
+            onClick={!isProcessed ? handleConfirm : undefined}
+            className="text-sm font-medium"
+          >
+            {isPending ? "Processando..." : "Confirmar"}
+          </Button>
+
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={isDisabled}
+            onClick={!isProcessed ? handleDeleteOrderClick : undefined}
+            className="text-sm font-medium"
+          >
+            {getButtonText()}
+          </Button>
+        </div>
       );
     },
   },
