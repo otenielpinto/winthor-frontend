@@ -2,7 +2,7 @@
 import { Suspense, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FilterSection } from "./FilterSection";
-import { getOrdersByNfe } from "@/actions/actPedidos";
+import { getOrdersByNfe } from "@/actions/pedidoAction";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
 import NfeTable from "./NfeTable";

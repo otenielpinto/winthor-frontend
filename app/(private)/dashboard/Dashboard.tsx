@@ -10,7 +10,7 @@ import FilterBar from "./FilterBar";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 import { Loader2 } from "lucide-react";
-import { getDashboardOrders } from "@/actions/actPedidos";
+import { getDashboardOrders } from "@/actions/pedidoAction";
 
 export default function Dashboard() {
   const [filters, setFilters] = useState({

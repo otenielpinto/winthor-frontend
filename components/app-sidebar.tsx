@@ -28,7 +28,7 @@ import {
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUser } from "@/hooks/useUser";
-import { getUserEmpresas } from "@/actions/actUser";
+import { getUserEmpresas } from "@/actions/userAction";
 
 // This is sample data.
 const data = {

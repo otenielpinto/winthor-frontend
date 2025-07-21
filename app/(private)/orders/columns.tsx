@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteOrder } from "@/actions/actPedidos";
+import { deleteOrder } from "@/actions/pedidoAction";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";

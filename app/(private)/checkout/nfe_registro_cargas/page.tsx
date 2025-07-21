@@ -6,7 +6,7 @@ import NfeTable from "@/app/(private)/notas_fiscais/NfeTable";
 import { lib } from "@/lib/lib";
 import { Button } from "@/components/ui/button";
 
-import { getOrdersByNfe } from "@/actions/actPedidos";
+import { getOrdersByNfe } from "@/actions/pedidoAction";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
 import RomaneioColeta from "./romaneio/page";

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { checkNfe } from "@/actions/actOrder";
+import { checkNfe } from "@/actions/orderAction";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
 

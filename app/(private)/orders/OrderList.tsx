@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DataTable } from "./DataTable";
 import { columns } from "./columns";
 import { FilterSection } from "./FilterSection";
-import { getOrders } from "@/actions/actPedidos";
+import { getOrders } from "@/actions/pedidoAction";
 import { FiltersOrder } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
 import { subDays } from "date-fns";

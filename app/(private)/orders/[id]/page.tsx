@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, use } from "react";
+import { useRouter } from "next/navigation";
 import { DadosPedido } from "./DadosPedido";
 import { DadosCliente } from "./DadosCliente";
 import { ItensPedido } from "./ItensPedido";
@@ -10,7 +11,7 @@ import { CheckoutDetails } from "./CheckoutDetails";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import { getOrderBySlug } from "@/actions/actPedidos";
+import { getOrderBySlug } from "@/actions/pedidoAction";
 import { Loader2 } from "lucide-react";
 
 // Utility function to safely format dates
@@ -116,6 +117,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     queryKey: ["ordersById", id],
     queryFn: () => getOrderBySlug(id),
   });
+  const router = useRouter();
 
   const [cepCliente, setCepCliente] = useState<string>("");
   const [checkoutData, setCheckoutData] = useState({
@@ -188,14 +190,6 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     });
   };
 
-  const handleUpdate = () => {
-    // Simular uma atualização dos dados
-    toast({
-      title: "Atualização",
-      description: "Os dados do pedido foram atualizados.",
-    });
-  };
-
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Detalhes do Pedido</h1>
@@ -222,11 +216,11 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         obs={data.pedido.obs}
         marcadores={data.pedido.marcadores}
       />
-      <div className="mt-4 flex justify-end space-x-2">
-        <Button onClick={handleSave}>Salvar Alterações</Button>
-        <Button onClick={handleUpdate} variant="outline">
-          Atualizar Dados
+      <div className="mt-4 flex justify-end items-center space-x-2">
+        <Button variant="outline" onClick={() => router.push("/orders")}>
+          <span>← Voltar</span>
         </Button>
+        <Button onClick={handleSave}>Salvar Alterações</Button>
       </div>
     </div>
   );
