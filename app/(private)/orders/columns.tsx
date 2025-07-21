@@ -180,6 +180,7 @@ export const columns: ColumnDef<any>[] = [
             disabled={isProcessed || isPending}
             onClick={!isProcessed ? handleConfirm : undefined}
             className="text-sm font-medium"
+            title="Confirmar Pedido"
           >
             {isPending ? "Processando..." : "Confirmar"}
           </Button>

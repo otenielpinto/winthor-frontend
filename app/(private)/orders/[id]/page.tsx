@@ -207,14 +207,14 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         onItemDelete={() => {}}
         onItemAdd={() => {}}
       />
-      <DadosEntrega endereco={data.pedido.endereco_entrega} />
+      <DadosEntrega endereco={data?.pedido?.endereco_entrega} />
       <CheckoutDetails checkout={checkoutData} />
       <OutrosDetalhes
-        formaPagamento={data.pedido.forma_pagamento}
-        nomeEcommerce={data.pedido.ecommerce.nomeEcommerce}
-        nomeTransportador={data.pedido.nome_transportador}
-        obs={data.pedido.obs}
-        marcadores={data.pedido.marcadores}
+        formaPagamento={data?.pedido?.forma_pagamento}
+        nomeEcommerce={data?.pedido?.ecommerce?.nomeEcommerce}
+        nomeTransportador={data?.pedido?.nome_transportador}
+        obs={data?.pedido?.obs}
+        marcadores={data?.pedido?.marcadores}
       />
       <div className="mt-4 flex justify-end items-center space-x-2">
         <Button variant="outline" onClick={() => router.push("/orders")}>
