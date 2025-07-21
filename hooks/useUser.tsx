@@ -16,5 +16,6 @@ async function getUser() {
 // codigo: user.codigo,
 // emp_acesso: user.emp_acesso || [],
 // empresa: user.empresa,
+//id_tenant: user.id_tenant,
 
 export { getUser };

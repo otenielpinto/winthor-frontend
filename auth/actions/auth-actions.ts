@@ -51,6 +51,7 @@ export async function login(formData: FormData) {
     codigo: user.codigo,
     emp_acesso: user.emp_acesso || [],
     empresa: user.emp_acesso[0] ? user.emp_acesso[0] : 0,
+    id_tenant: user.emp_acesso[0] ? user.emp_acesso[0] : 0,
   });
 
   redirect(

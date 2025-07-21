@@ -12,6 +12,9 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  Loader2,
+  User,
+  MessageCircle,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -92,9 +95,21 @@ const data = {
     },
 
     {
-      title: "Suporte",
+      title: "Configuracao",
       url: "#",
       icon: Settings2,
+      items: [
+        {
+          title: "Produtos Excecao",
+          url: "/produtoExcecao",
+        },
+      ],
+    },
+
+    {
+      title: "Suporte",
+      url: "#",
+      icon: MessageCircle,
       items: [
         {
           title: "Chat",
@@ -112,9 +127,10 @@ const data = {
   ],
 };
 
+let forceUpdate = 0;
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: xuser, isLoading } = useQuery<any>({
-    queryKey: ["nav-user"],
+    queryKey: ["nav-user", forceUpdate],
     queryFn: async () => await getUser(),
   });
 
@@ -122,6 +138,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     queryKey: ["nav-empresas", isLoading, xuser, xuser?.id],
     queryFn: async () => await getUserEmpresas(xuser?.id),
   });
+
+  if (isLoading || isLoadingEmpresas) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Aguarde...</span>
+      </div>
+    );
+  }
+
+  if (forceUpdate === 0 && xuser?.id) {
+    // If forceUpdate is 0 and xuser has an ID, set forceUpdate to
+    forceUpdate = xuser?.id || 0; // Ensure force is set to a valid value
+  }
 
   return (
     <Sidebar collapsible="icon" {...props}>

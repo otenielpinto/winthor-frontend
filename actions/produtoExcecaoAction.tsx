@@ -5,29 +5,23 @@ import { getUser } from "@/hooks/useUser";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 
-// Schema for validating stock shortage data
-const faltaEstoqueSchema = z.object({
+// Schema for validating product exception data
+const produtoExcessaoSchema = z.object({
   codigo: z.string().min(1, "Código é obrigatório"),
   descricao: z.string().min(1, "Descrição é obrigatória"),
-  id_produto: z.string().min(1, "ID do produto é obrigatório"),
-  quantidade: z.string().min(1, "Quantidade é obrigatória"),
-  unidade: z.string().min(1, "Unidade é obrigatória"),
-  valor_unitario: z.string().min(1, "Valor unitário é obrigatório"),
+  ativo: z.boolean().optional().default(true),
   id_tenant: z.number().optional(),
 });
 
-type FaltaEstoqueItem = {
+type ProdutoExcessaoItem = {
   _id?: string;
   id?: string;
   id_tenant: number;
   codigo: string;
   createdat?: Date;
   descricao: string;
-  id_produto: string;
-  quantidade: string;
-  unidade: string;
+  ativo: boolean;
   updatedat?: Date;
-  valor_unitario: string;
 };
 
 type ActionResult = {
@@ -38,11 +32,11 @@ type ActionResult = {
 };
 
 /**
- * Get all stock shortage items for a specific tenant
+ * Get all product exceptions for a specific tenant
  */
-export async function getFaltaEstoque(
+export async function getProdutoExcessao(
   id_tenant?: number
-): Promise<FaltaEstoqueItem[]> {
+): Promise<ProdutoExcessaoItem[]> {
   const { client, clientdb } = await TMongo.connectToDatabase();
 
   try {
@@ -50,7 +44,7 @@ export async function getFaltaEstoque(
     const tenantId = id_tenant || user?.id_tenant;
 
     const items = await clientdb
-      .collection("tmp_produto_falta_estoque")
+      .collection("tmp_produto_excecao")
       .find({ id_tenant: tenantId })
       .sort({ createdat: -1 })
       .toArray();
@@ -58,23 +52,23 @@ export async function getFaltaEstoque(
     return items.map((item) => ({
       ...item,
       _id: item._id.toString(),
-    })) as FaltaEstoqueItem[];
+    })) as ProdutoExcessaoItem[];
   } finally {
     await TMongo.mongoDisconnect(client);
   }
 }
 
 /**
- * Get a specific stock shortage item by ID
+ * Get a specific product exception by ID
  */
-export async function getFaltaEstoqueById(
+export async function getProdutoExcessaoById(
   id: string
-): Promise<FaltaEstoqueItem | null> {
+): Promise<ProdutoExcessaoItem | null> {
   const { client, clientdb } = await TMongo.connectToDatabase();
 
   try {
     const item = await clientdb
-      .collection("tmp_produto_falta_estoque")
+      .collection("tmp_produto_excecao")
       .findOne({ id: id });
 
     if (!item) return null;
@@ -82,19 +76,19 @@ export async function getFaltaEstoqueById(
     return {
       ...item,
       _id: item._id.toString(),
-    } as FaltaEstoqueItem;
+    } as ProdutoExcessaoItem;
   } finally {
     await TMongo.mongoDisconnect(client);
   }
 }
 
 /**
- * Get stock shortage items by product ID
+ * Get product exceptions by code
  */
-export async function getFaltaEstoqueByProduto(
-  id_produto: string,
+export async function getProdutoExcessaoByCodigo(
+  codigo: string,
   id_tenant?: number
-): Promise<FaltaEstoqueItem[]> {
+): Promise<ProdutoExcessaoItem[]> {
   const { client, clientdb } = await TMongo.connectToDatabase();
 
   try {
@@ -102,9 +96,9 @@ export async function getFaltaEstoqueByProduto(
     const tenantId = id_tenant || user?.id_tenant;
 
     const items = await clientdb
-      .collection("tmp_produto_falta_estoque")
+      .collection("tmp_produto_excecao")
       .find({
-        id_produto: id_produto,
+        codigo: codigo,
         id_tenant: tenantId,
       })
       .sort({ createdat: -1 })
@@ -113,26 +107,23 @@ export async function getFaltaEstoqueByProduto(
     return items.map((item) => ({
       ...item,
       _id: item._id.toString(),
-    })) as FaltaEstoqueItem[];
+    })) as ProdutoExcessaoItem[];
   } finally {
     await TMongo.mongoDisconnect(client);
   }
 }
 
 /**
- * Create a new stock shortage item
+ * Create a new product exception
  */
-export async function createFaltaEstoque(
+export async function createProdutoExcessao(
   formData: FormData
 ): Promise<ActionResult> {
   try {
-    const validatedFields = faltaEstoqueSchema.safeParse({
+    const validatedFields = produtoExcessaoSchema.safeParse({
       codigo: formData.get("codigo"),
       descricao: formData.get("descricao"),
-      id_produto: formData.get("id_produto"),
-      quantidade: formData.get("quantidade"),
-      unidade: formData.get("unidade"),
-      valor_unitario: formData.get("valor_unitario"),
+      ativo: formData.get("ativo") === "true",
     });
 
     if (!validatedFields.success) {
@@ -157,9 +148,9 @@ export async function createFaltaEstoque(
     try {
       const now = new Date();
 
-      // Generate a new ID (you might want to implement a better ID generation strategy)
+      // Generate a new ID
       const lastItem = await clientdb
-        .collection("tmp_produto_falta_estoque")
+        .collection("tmp_produto_excecao")
         .findOne({}, { sort: { id: -1 } });
 
       const newId = lastItem ? String(Number(lastItem.id) + 1) : "1";
@@ -173,44 +164,41 @@ export async function createFaltaEstoque(
       };
 
       const result = await clientdb
-        .collection("tmp_produto_falta_estoque")
+        .collection("tmp_produto_excecao")
         .insertOne(newItem);
 
-      revalidatePath("/falta_estoque");
+      revalidatePath("/produto_excecao");
 
       return {
         success: true,
-        message: "Item de falta de estoque criado com sucesso",
+        message: "Exceção de produto criada com sucesso",
         data: { ...newItem, _id: result.insertedId.toString() },
       };
     } finally {
       await TMongo.mongoDisconnect(client);
     }
   } catch (error) {
-    console.error("Error creating falta estoque:", error);
+    console.error("Error creating produto excecao:", error);
     return {
       success: false,
-      message: "Erro ao criar item de falta de estoque",
+      message: "Erro ao criar exceção de produto",
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
 
 /**
- * Update an existing stock shortage item
+ * Update an existing product exception
  */
-export async function updateFaltaEstoque(
+export async function updateProdutoExcessao(
   id: string,
   formData: FormData
 ): Promise<ActionResult> {
   try {
-    const validatedFields = faltaEstoqueSchema.safeParse({
+    const validatedFields = produtoExcessaoSchema.safeParse({
       codigo: formData.get("codigo"),
       descricao: formData.get("descricao"),
-      id_produto: formData.get("id_produto"),
-      quantidade: formData.get("quantidade"),
-      unidade: formData.get("unidade"),
-      valor_unitario: formData.get("valor_unitario"),
+      ativo: formData.get("ativo") === "true",
     });
 
     if (!validatedFields.success) {
@@ -230,83 +218,83 @@ export async function updateFaltaEstoque(
       };
 
       const result = await clientdb
-        .collection("tmp_produto_falta_estoque")
+        .collection("tmp_produto_excecao")
         .updateOne({ id: id }, { $set: updateData });
 
-      revalidatePath("/falta_estoque");
+      revalidatePath("/produto_excecao");
 
       if (result.matchedCount === 0) {
         return {
           success: false,
-          message: "Item não encontrado",
+          message: "Exceção não encontrada",
           error: "NOT_FOUND",
         };
       }
 
       return {
         success: true,
-        message: "Item atualizado com sucesso",
+        message: "Exceção atualizada com sucesso",
         data: updateData,
       };
     } finally {
       await TMongo.mongoDisconnect(client);
     }
   } catch (error) {
-    console.error("Error updating falta estoque:", error);
+    console.error("Error updating produto excecao:", error);
     return {
       success: false,
-      message: "Erro ao atualizar item",
+      message: "Erro ao atualizar exceção",
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
 
 /**
- * Delete a stock shortage item
+ * Delete a product exception
  */
-export async function deleteFaltaEstoque(id: string): Promise<ActionResult> {
+export async function deleteProdutoExcessao(id: string): Promise<ActionResult> {
   try {
     const { client, clientdb } = await TMongo.connectToDatabase();
 
     try {
       const result = await clientdb
-        .collection("tmp_produto_falta_estoque")
+        .collection("tmp_produto_excecao")
         .deleteOne({ id: id });
 
-      revalidatePath("/falta_estoque");
+      revalidatePath("/produto_excecao");
 
       if (result.deletedCount === 0) {
         return {
           success: false,
-          message: "Item não encontrado",
+          message: "Exceção não encontrada",
           error: "NOT_FOUND",
         };
       }
 
       return {
         success: true,
-        message: "Item removido com sucesso",
+        message: "Exceção removida com sucesso",
       };
     } finally {
       await TMongo.mongoDisconnect(client);
     }
   } catch (error) {
-    console.error("Error deleting falta estoque:", error);
+    console.error("Error deleting produto excecao:", error);
     return {
       success: false,
-      message: "Erro ao remover item",
+      message: "Erro ao remover exceção",
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
 
 /**
- * Search stock shortage items by description or code
+ * Search product exceptions by description, code, or product ID
  */
-export async function searchFaltaEstoque(
+export async function searchProdutoExcessao(
   searchTerm: string,
   id_tenant?: number
-): Promise<FaltaEstoqueItem[]> {
+): Promise<ProdutoExcessaoItem[]> {
   const { client, clientdb } = await TMongo.connectToDatabase();
 
   try {
@@ -314,13 +302,12 @@ export async function searchFaltaEstoque(
     const tenantId = id_tenant || user?.id_tenant;
 
     const items = await clientdb
-      .collection("tmp_produto_falta_estoque")
+      .collection("tmp_produto_excecao")
       .find({
         id_tenant: tenantId,
         $or: [
           { descricao: { $regex: searchTerm, $options: "i" } },
           { codigo: { $regex: searchTerm, $options: "i" } },
-          { id_produto: { $regex: searchTerm, $options: "i" } },
         ],
       })
       .sort({ createdat: -1 })
@@ -329,16 +316,16 @@ export async function searchFaltaEstoque(
     return items.map((item) => ({
       ...item,
       _id: item._id.toString(),
-    })) as FaltaEstoqueItem[];
+    })) as ProdutoExcessaoItem[];
   } finally {
     await TMongo.mongoDisconnect(client);
   }
 }
 
 /**
- * Get stock shortage statistics
+ * Get product exception statistics
  */
-export async function getFaltaEstoqueStats(id_tenant?: number) {
+export async function getProdutoExcessaoStats(id_tenant?: number) {
   const { client, clientdb } = await TMongo.connectToDatabase();
 
   try {
@@ -346,45 +333,46 @@ export async function getFaltaEstoqueStats(id_tenant?: number) {
     const tenantId = id_tenant || user?.id_tenant;
 
     const stats = await clientdb
-      .collection("tmp_produto_falta_estoque")
+      .collection("tmp_produto_excecao")
       .aggregate([
         { $match: { id_tenant: tenantId } },
         {
           $group: {
             _id: null,
             totalItems: { $sum: 1 },
-            totalQuantity: { $sum: { $toDouble: "$quantidade" } },
-            totalValue: { $sum: { $toDouble: "$valor_unitario" } },
-            avgValue: { $avg: { $toDouble: "$valor_unitario" } },
+            activeItems: {
+              $sum: { $cond: [{ $eq: ["$ativo", true] }, 1, 0] },
+            },
+            inactiveItems: {
+              $sum: { $cond: [{ $eq: ["$ativo", false] }, 1, 0] },
+            },
           },
         },
       ])
       .toArray();
 
-    return (
-      stats[0] || {
-        totalItems: 0,
-        totalQuantity: 0,
-        totalValue: 0,
-        avgValue: 0,
-      }
-    );
+    return {
+      totalItems: stats[0]?.totalItems || 0,
+      activeItems: stats[0]?.activeItems || 0,
+      inactiveItems: stats[0]?.inactiveItems || 0,
+    };
   } finally {
     await TMongo.mongoDisconnect(client);
   }
 }
 
 /**
- * Get stock shortage items with filters
+ * Get product exceptions with filters
  */
-export async function getFaltaEstoqueWithFilters(filters: {
+export async function getProdutoExcessaoWithFilters(filters: {
   startDate?: Date | null;
   endDate?: Date | null;
   descricao?: string;
   codigo?: string;
-  id_produto?: string;
+  tipo_excecao?: string;
+  ativo?: boolean;
   id_tenant?: number;
-}): Promise<FaltaEstoqueItem[]> {
+}): Promise<ProdutoExcessaoItem[]> {
   const { client, clientdb } = await TMongo.connectToDatabase();
 
   try {
@@ -404,6 +392,16 @@ export async function getFaltaEstoqueWithFilters(filters: {
       };
     }
 
+    // Add active/inactive filter
+    if (typeof filters.ativo === "boolean") {
+      query.ativo = filters.ativo;
+    }
+
+    // Add type filter
+    if (filters.tipo_excecao) {
+      query.tipo_excecao = filters.tipo_excecao;
+    }
+
     // Add search filters
     const searchFilters = [];
 
@@ -419,18 +417,12 @@ export async function getFaltaEstoqueWithFilters(filters: {
       });
     }
 
-    if (filters.id_produto) {
-      searchFilters.push({
-        id_produto: { $regex: filters.id_produto, $options: "i" },
-      });
-    }
-
     if (searchFilters.length > 0) {
       query.$or = searchFilters;
     }
 
     const items = await clientdb
-      .collection("tmp_produto_falta_estoque")
+      .collection("tmp_produto_excecao")
       .find(query)
       .sort({ createdat: -1 })
       .toArray();
@@ -438,8 +430,72 @@ export async function getFaltaEstoqueWithFilters(filters: {
     return items.map((item) => ({
       ...item,
       _id: item._id.toString(),
-    })) as FaltaEstoqueItem[];
+    })) as ProdutoExcessaoItem[];
   } finally {
     await TMongo.mongoDisconnect(client);
+  }
+}
+
+/**
+ * Toggle product exception active status
+ */
+export async function toggleProdutoExcessaoStatus(
+  id: string
+): Promise<ActionResult> {
+  try {
+    const { client, clientdb } = await TMongo.connectToDatabase();
+
+    try {
+      // First get the current item
+      const currentItem = await clientdb
+        .collection("tmp_produto_excecao")
+        .findOne({ id: id });
+
+      if (!currentItem) {
+        return {
+          success: false,
+          message: "Exceção não encontrada",
+          error: "NOT_FOUND",
+        };
+      }
+
+      // Toggle the active status
+      const newStatus = !currentItem.ativo;
+
+      const result = await clientdb.collection("tmp_produto_excecao").updateOne(
+        { id: id },
+        {
+          $set: {
+            ativo: newStatus,
+            updatedat: new Date(),
+          },
+        }
+      );
+
+      revalidatePath("/produto_excecao");
+
+      if (result.matchedCount === 0) {
+        return {
+          success: false,
+          message: "Exceção não encontrada",
+          error: "NOT_FOUND",
+        };
+      }
+
+      return {
+        success: true,
+        message: `Exceção ${newStatus ? "ativada" : "desativada"} com sucesso`,
+        data: { ativo: newStatus },
+      };
+    } finally {
+      await TMongo.mongoDisconnect(client);
+    }
+  } catch (error) {
+    console.error("Error toggling produto excecao status:", error);
+    return {
+      success: false,
+      message: "Erro ao alterar status da exceção",
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }

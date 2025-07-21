@@ -9,4 +9,5 @@ export type User = {
   codigo?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  id_tenant?: number;
 };
