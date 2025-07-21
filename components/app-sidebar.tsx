@@ -65,6 +65,10 @@ const data = {
           title: "Dashboard",
           url: "/dashboard",
         },
+        {
+          title: "Falta de Estoque",
+          url: "/faltaEstoque",
+        },
 
         {
           title: "Pedidos no ecommerce",
