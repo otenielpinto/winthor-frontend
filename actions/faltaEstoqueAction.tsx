@@ -176,7 +176,7 @@ export async function createFaltaEstoque(
         .collection("tmp_produto_falta_estoque")
         .insertOne(newItem);
 
-      revalidatePath("/falta_estoque");
+      revalidatePath("/faltaEstoque");
 
       return {
         success: true,
@@ -233,7 +233,7 @@ export async function updateFaltaEstoque(
         .collection("tmp_produto_falta_estoque")
         .updateOne({ id: id }, { $set: updateData });
 
-      revalidatePath("/falta_estoque");
+      revalidatePath("/faltaEstoque");
 
       if (result.matchedCount === 0) {
         return {
@@ -273,7 +273,7 @@ export async function deleteFaltaEstoque(id: string): Promise<ActionResult> {
         .collection("tmp_produto_falta_estoque")
         .deleteOne({ id: id });
 
-      revalidatePath("/falta_estoque");
+      revalidatePath("/faltaEstoque");
 
       if (result.deletedCount === 0) {
         return {
