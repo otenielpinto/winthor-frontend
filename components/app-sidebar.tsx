@@ -103,6 +103,11 @@ const data = {
           title: "Produtos Excecao",
           url: "/produtoExcecao",
         },
+
+        {
+          title: "Configuracao Sistema",
+          url: "/configuracao",
+        },
       ],
     },
 
