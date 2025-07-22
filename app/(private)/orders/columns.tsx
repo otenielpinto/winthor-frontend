@@ -135,6 +135,10 @@ export const columns: ColumnDef<any>[] = [
       const handleDeleteOrderClick = () => {
         startTransition(async () => {
           try {
+            // Save the order stage before deleting
+            await saveOrderEtapa(orderId);
+
+            // Proceed with deleting the order
             const response = await deleteOrder(orderId);
             if (response.success) {
               toast.success(response.message);
@@ -149,24 +153,6 @@ export const columns: ColumnDef<any>[] = [
         });
       };
 
-      const handleConfirm = () => {
-        startTransition(async () => {
-          try {
-            const response = await saveOrderEtapa(orderId);
-            if (response.success) {
-              //se o pedido foi confirmado, exclua o pedido
-              const response = await deleteOrder(orderId);
-              toast.success("Pedido confirmado com sucesso");
-              await queryClient.invalidateQueries({ queryKey: ["orders"] });
-            } else {
-              toast.error(response.message);
-            }
-          } catch (e) {
-            toast.error("Erro ao confirmar pedido");
-          }
-        });
-      };
-
       const getButtonText = () => {
         if (isPending) return "Processando...";
         return "Reprocessar";
@@ -174,17 +160,6 @@ export const columns: ColumnDef<any>[] = [
 
       return (
         <div className="flex gap-2">
-          <Button
-            variant="default"
-            size="sm"
-            disabled={isProcessed || isPending}
-            onClick={!isProcessed ? handleConfirm : undefined}
-            className="text-sm font-medium"
-            title="Confirmar Pedido"
-          >
-            {isPending ? "Processando..." : "Confirmar"}
-          </Button>
-
           <Button
             variant="destructive"
             size="sm"

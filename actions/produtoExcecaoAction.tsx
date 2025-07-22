@@ -147,13 +147,7 @@ export async function createProdutoExcessao(
 
     try {
       const now = new Date();
-
-      // Generate a new ID
-      const lastItem = await clientdb
-        .collection("tmp_produto_excecao")
-        .findOne({}, { sort: { id: -1 } });
-
-      const newId = lastItem ? String(Number(lastItem.id) + 1) : "1";
+      const newId = Date.now().toString() + "-" + validatedFields.data.codigo;
 
       const newItem = {
         id: newId,
@@ -167,7 +161,7 @@ export async function createProdutoExcessao(
         .collection("tmp_produto_excecao")
         .insertOne(newItem);
 
-      revalidatePath("/produto_excecao");
+      revalidatePath("/produtoExcecao");
 
       return {
         success: true,
@@ -221,7 +215,7 @@ export async function updateProdutoExcessao(
         .collection("tmp_produto_excecao")
         .updateOne({ id: id }, { $set: updateData });
 
-      revalidatePath("/produto_excecao");
+      revalidatePath("/produtoExcecao");
 
       if (result.matchedCount === 0) {
         return {
@@ -261,7 +255,7 @@ export async function deleteProdutoExcessao(id: string): Promise<ActionResult> {
         .collection("tmp_produto_excecao")
         .deleteOne({ id: id });
 
-      revalidatePath("/produto_excecao");
+      revalidatePath("/produtoExcecao");
 
       if (result.deletedCount === 0) {
         return {
@@ -472,7 +466,7 @@ export async function toggleProdutoExcessaoStatus(
         }
       );
 
-      revalidatePath("/produto_excecao");
+      revalidatePath("/produtoExcecao");
 
       if (result.matchedCount === 0) {
         return {
