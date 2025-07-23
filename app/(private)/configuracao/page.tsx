@@ -29,6 +29,7 @@ import { getConfiguracao, setConfiguracao } from "@/actions/configuracaoAction";
 const configuracaoSchema = z.object({
   wta_validar_etapa: z.boolean().default(false),
   wta_validar_estoque: z.boolean().default(false),
+  wta_reprocessar_hora: z.boolean().default(false),
 });
 
 type ConfiguracaoFormValues = z.infer<typeof configuracaoSchema>;
@@ -42,6 +43,7 @@ export default function ConfiguracaoPage() {
     defaultValues: {
       wta_validar_etapa: false,
       wta_validar_estoque: false,
+      wta_reprocessar_hora: false,
     },
   });
 
@@ -56,6 +58,7 @@ export default function ConfiguracaoPage() {
           form.reset({
             wta_validar_etapa: config.wta_validar_etapa ?? false,
             wta_validar_estoque: config.wta_validar_estoque ?? false,
+            wta_reprocessar_hora: config.wta_reprocessar_hora ?? false,
           });
         }
       } catch (error) {
@@ -144,6 +147,32 @@ export default function ConfiguracaoPage() {
                       </FormLabel>
                       <FormDescription>
                         Ativa a validação de estoque durante os pedidos
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isSaving}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="wta_reprocessar_hora"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">
+                        Reprocessamento Automático
+                      </FormLabel>
+                      <FormDescription>
+                        Ativa o reprocessamento automático dos pedidos com erros
+                        de processamento
                       </FormDescription>
                     </div>
                     <FormControl>

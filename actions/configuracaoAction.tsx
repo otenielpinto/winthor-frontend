@@ -19,6 +19,7 @@ export async function getConfiguracao() {
         projection: {
           wta_validar_etapa: 1,
           wta_validar_estoque: 1,
+          wta_reprocessar_hora: 1,
           id: 1,
         },
       }
@@ -35,6 +36,7 @@ export async function getConfiguracao() {
       // Convert numeric values (0/1) to boolean for the form
       wta_validar_etapa: response.wta_validar_etapa === 1,
       wta_validar_estoque: response.wta_validar_estoque === 1,
+      wta_reprocessar_hora: response.wta_reprocessar_hora === 1,
       _id: response._id.toString(),
     };
   } catch (error) {
@@ -46,6 +48,7 @@ export async function getConfiguracao() {
 export async function setConfiguracao(data: {
   wta_validar_etapa?: boolean;
   wta_validar_estoque?: boolean;
+  wta_reprocessar_hora?: boolean;
 }) {
   const user = await getUser();
 
@@ -65,6 +68,10 @@ export async function setConfiguracao(data: {
 
     if (data.wta_validar_estoque !== undefined) {
       updateData.wta_validar_estoque = data.wta_validar_estoque ? 1 : 0;
+    }
+
+    if (data.wta_reprocessar_hora !== undefined) {
+      updateData.wta_reprocessar_hora = data.wta_reprocessar_hora ? 1 : 0;
     }
 
     const response = await clientdb

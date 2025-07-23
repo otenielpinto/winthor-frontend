@@ -23,7 +23,7 @@ export async function saveOrderEtapa(
       $set: {
         id: Number(orderId),
         id_tenant: user.id_tenant,
-        userId: user.id,
+        userName: user.name,
         updatedAt: new Date(),
         status: "confirmed",
       },
