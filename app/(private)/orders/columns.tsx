@@ -52,16 +52,23 @@ export const columns: ColumnDef<any>[] = [
     header: "Numero do Ecommerce",
     cell: ({ row }) => {
       const numeroEcommerce = row.getValue("numero_ecommerce") as string;
+      const nome_ecommerce = row.getValue("nome_ecommerce") as string;
 
       const handleClick = () => {
-        const url = `https://www.mercadolivre.com.br/vendas/${numeroEcommerce}/detalhe`;
+        let url = "";
+        if (nome_ecommerce === "Mercado Livre") {
+          url = `https://www.mercadolivre.com.br/vendas/${numeroEcommerce}/detalhe`;
+        } else if (nome_ecommerce === "Shopee") {
+          url = `https://seller.shopee.com.br/portal/sale/order`;
+        }
+
         window.open(url, "_blank");
       };
 
       return (
         <button
           onClick={handleClick}
-          title="Abrir no Ecommerce Mercado Livre"
+          title="Abrir Pedido no marketplace"
           className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
         >
           {numeroEcommerce}
