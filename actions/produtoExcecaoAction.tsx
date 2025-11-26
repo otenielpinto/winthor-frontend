@@ -114,7 +114,7 @@ export async function getProdutoExcessaoByCodigo(
 }
 
 /**
- * Create a new product exception
+ * Create a new product exception or update if code already exists for tenant
  */
 export async function createProdutoExcessao(
   formData: FormData
@@ -146,7 +146,41 @@ export async function createProdutoExcessao(
     const { client, clientdb } = await TMongo.connectToDatabase();
 
     try {
+      // Check if product exception already exists for this tenant and code
+      const existingItem = await clientdb
+        .collection("tmp_produto_excecao")
+        .findOne({
+          codigo: validatedFields.data.codigo,
+          id_tenant: user?.id_tenant,
+        });
+
       const now = new Date();
+
+      // If exists, update it
+      if (existingItem) {
+        const updateData = {
+          ...validatedFields.data,
+          updatedat: now,
+        };
+
+        await clientdb
+          .collection("tmp_produto_excecao")
+          .updateOne({ id: existingItem.id }, { $set: updateData });
+
+        revalidatePath("/produto-excecao");
+
+        return {
+          success: true,
+          message: "Exceção de produto atualizada com sucesso",
+          data: {
+            ...existingItem,
+            ...updateData,
+            _id: existingItem._id.toString(),
+          },
+        };
+      }
+
+      // If doesn't exist, create new
       const newId = Date.now().toString() + "-" + validatedFields.data.codigo;
 
       const newItem = {
@@ -161,7 +195,7 @@ export async function createProdutoExcessao(
         .collection("tmp_produto_excecao")
         .insertOne(newItem);
 
-      revalidatePath("/produtoExcecao");
+      revalidatePath("/produto-excecao");
 
       return {
         success: true,
@@ -215,7 +249,7 @@ export async function updateProdutoExcessao(
         .collection("tmp_produto_excecao")
         .updateOne({ id: id }, { $set: updateData });
 
-      revalidatePath("/produtoExcecao");
+      revalidatePath("/produto-excecao");
 
       if (result.matchedCount === 0) {
         return {
@@ -255,7 +289,7 @@ export async function deleteProdutoExcessao(id: string): Promise<ActionResult> {
         .collection("tmp_produto_excecao")
         .deleteOne({ id: id });
 
-      revalidatePath("/produtoExcecao");
+      revalidatePath("/produto-excecao");
 
       if (result.deletedCount === 0) {
         return {
@@ -466,7 +500,7 @@ export async function toggleProdutoExcessaoStatus(
         }
       );
 
-      revalidatePath("/produtoExcecao");
+      revalidatePath("/produto-excecao");
 
       if (result.matchedCount === 0) {
         return {

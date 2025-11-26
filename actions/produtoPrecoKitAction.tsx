@@ -153,6 +153,50 @@ export async function createProdutoPrecoKit(
 
     try {
       const now = new Date();
+
+      // Check if product with same codigo and id_tenant already exists
+      const existingItem = await clientdb
+        .collection("tmp_produto_preco_kit")
+        .findOne({
+          codigo: validatedFields.data.codigo,
+          id_tenant: user?.id_tenant,
+        });
+
+      // If exists, update the price instead of creating new
+      if (existingItem) {
+        const updateResult = await clientdb
+          .collection("tmp_produto_preco_kit")
+          .updateOne(
+            { _id: existingItem._id },
+            {
+              $set: {
+                valor: validatedFields.data.valor,
+                descricao: validatedFields.data.descricao,
+                ativo: validatedFields.data.ativo,
+                updatedat: now,
+                user_upd: user?.name || validatedFields.data.user_upd,
+              },
+            }
+          );
+
+        revalidatePath("/produto-preco-kit");
+
+        return {
+          success: true,
+          message: "Preço atualizado com sucesso (código já existente)",
+          data: {
+            ...existingItem,
+            valor: validatedFields.data.valor,
+            descricao: validatedFields.data.descricao,
+            ativo: validatedFields.data.ativo,
+            updatedat: now,
+            user_upd: user?.name || validatedFields.data.user_upd,
+            _id: existingItem._id.toString(),
+          },
+        };
+      }
+
+      // If not exists, create new item
       const newId = Date.now().toString() + "-" + validatedFields.data.codigo;
 
       const newItem = {
@@ -168,7 +212,7 @@ export async function createProdutoPrecoKit(
         .collection("tmp_produto_preco_kit")
         .insertOne(newItem);
 
-      revalidatePath("/produtoPrecoKit");
+      revalidatePath("/produto-preco-kit");
 
       return {
         success: true,
@@ -227,7 +271,7 @@ export async function updateProdutoPrecoKit(
         .collection("tmp_produto_preco_kit")
         .updateOne({ id: id }, { $set: updateData });
 
-      revalidatePath("/produtoPrecoKit");
+      revalidatePath("/produto-preco-kit");
 
       if (result.matchedCount === 0) {
         return {
@@ -267,7 +311,7 @@ export async function deleteProdutoPrecoKit(id: string): Promise<ActionResult> {
         .collection("tmp_produto_preco_kit")
         .deleteOne({ id: id });
 
-      revalidatePath("/produtoPrecoKit");
+      revalidatePath("/produto-preco-kit");
 
       if (result.deletedCount === 0) {
         return {
@@ -499,7 +543,7 @@ export async function toggleProdutoPrecoKitStatus(
           }
         );
 
-      revalidatePath("/produtoPrecoKit");
+      revalidatePath("/produto-preco-kit");
 
       if (result.matchedCount === 0) {
         return {

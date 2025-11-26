@@ -101,12 +101,17 @@ const data = {
       items: [
         {
           title: "Produtos Excecao",
-          url: "/produtoExcecao",
+          url: "/produto-excecao",
         },
 
         {
           title: "Configuracao Sistema",
           url: "/configuracao",
+        },
+
+        {
+          title: "Tabela Preco fixo Kits",
+          url: "/produto-preco-kit",
         },
       ],
     },
