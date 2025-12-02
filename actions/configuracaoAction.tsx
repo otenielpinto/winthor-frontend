@@ -20,6 +20,7 @@ export async function getConfiguracao() {
           wta_validar_etapa: 1,
           wta_validar_estoque: 1,
           wta_reprocessar_hora: 1,
+          wta_preco_fixo_kit: 1,
           id: 1,
         },
       }
@@ -37,6 +38,7 @@ export async function getConfiguracao() {
       wta_validar_etapa: response.wta_validar_etapa === 1,
       wta_validar_estoque: response.wta_validar_estoque === 1,
       wta_reprocessar_hora: response.wta_reprocessar_hora === 1,
+      wta_preco_fixo_kit: response.wta_preco_fixo_kit === 1,
       _id: response._id.toString(),
     };
   } catch (error) {
@@ -49,6 +51,7 @@ export async function setConfiguracao(data: {
   wta_validar_etapa?: boolean;
   wta_validar_estoque?: boolean;
   wta_reprocessar_hora?: boolean;
+  wta_preco_fixo_kit?: boolean;
 }) {
   const user = await getUser();
 
@@ -72,6 +75,10 @@ export async function setConfiguracao(data: {
 
     if (data.wta_reprocessar_hora !== undefined) {
       updateData.wta_reprocessar_hora = data.wta_reprocessar_hora ? 1 : 0;
+    }
+
+    if (data.wta_preco_fixo_kit !== undefined) {
+      updateData.wta_preco_fixo_kit = data.wta_preco_fixo_kit ? 1 : 0;
     }
 
     const response = await clientdb
