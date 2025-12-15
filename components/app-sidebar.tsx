@@ -15,6 +15,7 @@ import {
   Loader2,
   User,
   MessageCircle,
+  Files,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -112,6 +113,18 @@ const data = {
         {
           title: "Tabela Preco fixo Kits",
           url: "/produto-preco-kit",
+        },
+      ],
+    },
+
+    {
+      title: "Arquivos",
+      url: "#",
+      icon: Files,
+      items: [
+        {
+          title: "Enviar arquivo custo Kits",
+          url: "/arquivos/custo-kits",
         },
       ],
     },
