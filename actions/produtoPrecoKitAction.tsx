@@ -11,7 +11,6 @@ const produtoPrecoKitSchema = z.object({
   descricao: z.string().min(1, "Descrição é obrigatória"),
   valor: z.number().min(0, "Valor deve ser maior ou igual a zero"),
   user_upd: z.string().optional().default(""),
-  ativo: z.boolean().optional().default(true),
   id_tenant: z.number().optional(),
 });
 
@@ -24,7 +23,6 @@ type ProdutoPrecoKitItem = {
   descricao: string;
   valor: number;
   user_upd: string;
-  ativo: boolean;
   updatedat?: Date;
 };
 
@@ -172,7 +170,6 @@ export async function createProdutoPrecoKit(
               $set: {
                 valor: validatedFields.data.valor,
                 descricao: validatedFields.data.descricao,
-                ativo: validatedFields.data.ativo,
                 updatedat: now,
                 user_upd: user?.name || validatedFields.data.user_upd,
               },
@@ -188,7 +185,6 @@ export async function createProdutoPrecoKit(
             ...existingItem,
             valor: validatedFields.data.valor,
             descricao: validatedFields.data.descricao,
-            ativo: validatedFields.data.ativo,
             updatedat: now,
             user_upd: user?.name || validatedFields.data.user_upd,
             _id: existingItem._id.toString(),
@@ -245,7 +241,6 @@ export async function updateProdutoPrecoKit(
       descricao: formData.get("descricao"),
       valor: parseFloat(formData.get("valor") as string) || 0,
       user_upd: formData.get("user_upd") || "",
-      ativo: formData.get("ativo") === "true",
     });
 
     if (!validatedFields.success) {
@@ -390,12 +385,6 @@ export async function getProdutoPrecoKitStats(id_tenant?: number) {
           $group: {
             _id: null,
             totalItems: { $sum: 1 },
-            activeItems: {
-              $sum: { $cond: [{ $eq: ["$ativo", true] }, 1, 0] },
-            },
-            inactiveItems: {
-              $sum: { $cond: [{ $eq: ["$ativo", false] }, 1, 0] },
-            },
             totalValor: { $sum: "$valor" },
             avgValor: { $avg: "$valor" },
           },
@@ -405,8 +394,6 @@ export async function getProdutoPrecoKitStats(id_tenant?: number) {
 
     return {
       totalItems: stats[0]?.totalItems || 0,
-      activeItems: stats[0]?.activeItems || 0,
-      inactiveItems: stats[0]?.inactiveItems || 0,
       totalValor: stats[0]?.totalValor || 0,
       avgValor: stats[0]?.avgValor || 0,
     };
@@ -426,7 +413,6 @@ export async function getProdutoPrecoKitWithFilters(filters: {
   valorMin?: number;
   valorMax?: number;
   user_upd?: string;
-  ativo?: boolean;
   id_tenant?: number;
 }): Promise<ProdutoPrecoKitItem[]> {
   const { client, clientdb } = await TMongo.connectToDatabase();
@@ -446,11 +432,6 @@ export async function getProdutoPrecoKitWithFilters(filters: {
         $gte: filters.startDate,
         $lte: filters.endDate,
       };
-    }
-
-    // Add active/inactive filter
-    if (typeof filters.ativo === "boolean") {
-      query.ativo = filters.ativo;
     }
 
     // Add valor range filter
@@ -500,75 +481,5 @@ export async function getProdutoPrecoKitWithFilters(filters: {
     })) as ProdutoPrecoKitItem[];
   } finally {
     await TMongo.mongoDisconnect(client);
-  }
-}
-
-/**
- * Toggle product price kit active status
- */
-export async function toggleProdutoPrecoKitStatus(
-  id: string
-): Promise<ActionResult> {
-  try {
-    const user = await getUser();
-    const { client, clientdb } = await TMongo.connectToDatabase();
-
-    try {
-      // First get the current item
-      const currentItem = await clientdb
-        .collection("tmp_produto_preco_kit")
-        .findOne({ id: id });
-
-      if (!currentItem) {
-        return {
-          success: false,
-          message: "Preço kit não encontrado",
-          error: "NOT_FOUND",
-        };
-      }
-
-      // Toggle the active status
-      const newStatus = !currentItem.ativo;
-
-      const result = await clientdb
-        .collection("tmp_produto_preco_kit")
-        .updateOne(
-          { id: id },
-          {
-            $set: {
-              ativo: newStatus,
-              user_upd: user?.name || "",
-              updatedat: new Date(),
-            },
-          }
-        );
-
-      revalidatePath("/produto-preco-kit");
-
-      if (result.matchedCount === 0) {
-        return {
-          success: false,
-          message: "Preço kit não encontrado",
-          error: "NOT_FOUND",
-        };
-      }
-
-      return {
-        success: true,
-        message: `Preço kit ${
-          newStatus ? "ativado" : "desativado"
-        } com sucesso`,
-        data: { ativo: newStatus },
-      };
-    } finally {
-      await TMongo.mongoDisconnect(client);
-    }
-  } catch (error) {
-    console.error("Error toggling produto preco kit status:", error);
-    return {
-      success: false,
-      message: "Erro ao alterar status do preço kit",
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
   }
 }

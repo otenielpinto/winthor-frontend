@@ -56,8 +56,6 @@ import {
   Plus,
   Edit,
   Trash2,
-  ToggleLeft,
-  ToggleRight,
   X,
   ChevronLeft,
   ChevronRight,
@@ -67,7 +65,6 @@ import {
   createProdutoPrecoKit,
   updateProdutoPrecoKit,
   deleteProdutoPrecoKit,
-  toggleProdutoPrecoKitStatus,
   searchProdutoPrecoKit,
 } from "@/actions/produtoPrecoKitAction";
 
@@ -76,7 +73,6 @@ const formSchema = z.object({
   codigo: z.string().min(1, "Código é obrigatório"),
   descricao: z.string().min(1, "Descrição é obrigatória"),
   valor: z.coerce.number().min(0, "Valor deve ser maior ou igual a zero"),
-  ativo: z.boolean().default(true),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -90,7 +86,6 @@ type ProdutoPrecoKitItem = {
   descricao: string;
   valor: number;
   user_upd: string;
-  ativo: boolean;
   updatedat?: Date;
 };
 
@@ -112,7 +107,6 @@ export default function ProdutoPrecoKitPage() {
       codigo: "",
       descricao: "",
       valor: 0,
-      ativo: true,
     },
   });
 
@@ -232,32 +226,6 @@ export default function ProdutoPrecoKitPage() {
     }
   };
 
-  // Toggle status
-  const handleToggleStatus = async (id: string) => {
-    try {
-      const result = await toggleProdutoPrecoKitStatus(id);
-      if (result.success) {
-        toast({
-          title: "Sucesso",
-          description: result.message,
-        });
-        loadData();
-      } else {
-        toast({
-          title: "Erro",
-          description: result.message,
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao alterar status",
-        variant: "destructive",
-      });
-    }
-  };
-
   // Open edit dialog
   const handleEdit = (item: ProdutoPrecoKitItem) => {
     setSelectedItem(item);
@@ -265,7 +233,6 @@ export default function ProdutoPrecoKitPage() {
       codigo: item.codigo,
       descricao: item.descricao,
       valor: item.valor,
-      ativo: item.ativo,
     });
     setIsDialogOpen(true);
   };
@@ -382,7 +349,6 @@ export default function ProdutoPrecoKitPage() {
                     <TableHead>Descrição</TableHead>
                     <TableHead>Valor</TableHead>
                     <TableHead>Atualizado por</TableHead>
-                    <TableHead>Status</TableHead>
                     <TableHead>Ações</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -396,11 +362,6 @@ export default function ProdutoPrecoKitPage() {
                       <TableCell>{formatCurrency(item.valor)}</TableCell>
                       <TableCell>{item.user_upd || "-"}</TableCell>
                       <TableCell>
-                        <Badge variant={item.ativo ? "default" : "secondary"}>
-                          {item.ativo ? "Ativo" : "Inativo"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
                         <div className="flex space-x-2">
                           <Button
                             variant="outline"
@@ -408,17 +369,6 @@ export default function ProdutoPrecoKitPage() {
                             onClick={() => handleEdit(item)}
                           >
                             <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleToggleStatus(item.id!)}
-                          >
-                            {item.ativo ? (
-                              <ToggleLeft className="h-4 w-4" />
-                            ) : (
-                              <ToggleRight className="h-4 w-4" />
-                            )}
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -454,7 +404,7 @@ export default function ProdutoPrecoKitPage() {
                   {items.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={6}
+                        colSpan={5}
                         className="text-center py-8 text-muted-foreground"
                       >
                         Nenhum preço kit encontrado
@@ -606,29 +556,6 @@ export default function ProdutoPrecoKitPage() {
                   </FormItem>
                 )}
               />
-
-              <div className="grid grid-cols-1 gap-4">
-                <FormField
-                  control={form.control}
-                  name="ativo"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                      <div className="space-y-0.5">
-                        <FormLabel>Status</FormLabel>
-                        <FormDescription className="text-xs">
-                          Ativo/Inativo
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
 
               <div className="flex justify-end space-x-2">
                 <Button
