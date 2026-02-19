@@ -8,6 +8,7 @@ import { lib } from "@/lib/lib";
 import {
   Region,
   Order,
+  PaginatedOrderResult,
   statusToString,
   statusToCodigo,
 } from "@/types/OrderTypes";
@@ -82,7 +83,7 @@ export async function getDashboardOrders(filters: any): Promise<DashboardData> {
     0,
     0,
     0,
-    0
+    0,
   );
 
   let period = filters.period;
@@ -190,7 +191,7 @@ export async function getDashboardOrders(filters: any): Promise<DashboardData> {
     (order) =>
       order.status_processo === 1 ||
       order.status_processo === 2 ||
-      order.status_processo === 500
+      order.status_processo === 500,
   );
 
   return {
@@ -209,7 +210,7 @@ export async function getDashboardOrders(filters: any): Promise<DashboardData> {
   };
 }
 
-export async function getOrders(filters: any): Promise<any> {
+export async function getOrders(filters: any): Promise<PaginatedOrderResult> {
   const user: any = await getUser();
   let startDate = filters.startDate
     ? lib.setUTCHoursStart(filters.startDate)
@@ -217,8 +218,14 @@ export async function getOrders(filters: any): Promise<any> {
   let endDate = filters.endDate ? lib.setUTCHoursEnd(filters.endDate) : null;
   let status = Number(statusToCodigo(filters.status));
 
+  const page: number =
+    filters.page && filters.page > 0 ? Number(filters.page) : 0;
+  const pageSize: number =
+    filters.pageSize && filters.pageSize > 0 ? Number(filters.pageSize) : 0;
+  const isPaginated = page > 0 && pageSize > 0;
+
   //**************************************************************** */
-  let query = {
+  let query: any = {
     idtenant: user.empresa,
     dt_movto: { $gte: startDate, $lte: endDate },
     ...(status && status !== 0 && { status: status }),
@@ -235,14 +242,38 @@ export async function getOrders(filters: any): Promise<any> {
   }
 
   const { client, clientdb } = await TMongo.connectToDatabase();
-  let rows = await clientdb.collection("order").find(query).toArray();
+  const collection = clientdb.collection("order");
+
+  let rows: any[];
+  let total: number;
+
+  if (isPaginated) {
+    // Executa contagem e busca em paralelo para máxima performance
+    const [count, pageRows] = await Promise.all([
+      collection.countDocuments(query),
+      collection
+        .find(query)
+        .sort({ dt_movto: -1 })
+        .skip((page - 1) * pageSize)
+        .limit(pageSize)
+        .toArray(),
+    ]);
+    total = count;
+    rows = pageRows;
+  } else {
+    rows = await collection.find(query).sort({ dt_movto: -1 }).toArray();
+    total = rows.length;
+  }
+
   //**************************************************************** */
   await TMongo.mongoDisconnect(client);
-  let orders: Order[] = [];
 
-  for (let order of rows) {
-    let status_wta = obterMessageWTA(order.wta_message);
-    let region: Region = lib.classifyRegion(order.pedido.cliente.uf) as Region;
+  const orders: Order[] = [];
+  for (const order of rows) {
+    const status_wta = obterMessageWTA(order.wta_message);
+    const region: Region = lib.classifyRegion(
+      order.pedido.cliente.uf,
+    ) as Region;
 
     orders.push({
       id: order.pedido.id,
@@ -260,14 +291,21 @@ export async function getOrders(filters: any): Promise<any> {
     } as Order);
   }
 
-  //aplicar filtros
+  const effectivePage = isPaginated ? page : 1;
+  const effectivePageSize = isPaginated ? pageSize : total;
+  const totalPages = isPaginated ? Math.ceil(total / pageSize) : 1;
 
-  rows = [];
-  return orders;
+  return {
+    data: orders,
+    total,
+    page: effectivePage,
+    pageSize: effectivePageSize,
+    totalPages,
+  };
 }
 
 export async function deleteOrder(
-  orderId: string
+  orderId: string,
 ): Promise<{ success: boolean; message: string }> {
   const user: any = await getUser();
 

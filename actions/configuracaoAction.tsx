@@ -23,7 +23,7 @@ export async function getConfiguracao() {
           wta_preco_fixo_kit: 1,
           id: 1,
         },
-      }
+      },
     );
 
     await TMongo.mongoDisconnect(client);
@@ -87,6 +87,53 @@ export async function setConfiguracao(data: {
 
     await TMongo.mongoDisconnect(client);
     return response;
+  } catch (error) {
+    await TMongo.mongoDisconnect(client);
+    throw error;
+  }
+}
+
+export type ConfiguracaoTotvs = {
+  totvs_host: string;
+  totvs_port: string | number;
+  totvs_login: string;
+  totvs_usuario: string;
+};
+
+export async function getConfiguracaoTotvs(): Promise<ConfiguracaoTotvs | null> {
+  const user = await getUser();
+
+  if (!user || !user.id_tenant) {
+    return null;
+  }
+
+  const { client, clientdb } = await TMongo.connectToDatabase();
+
+  try {
+    const response = await clientdb.collection("tenant").findOne(
+      { id: Number(user.id_tenant) },
+      {
+        projection: {
+          totvs_host: 1,
+          totvs_port: 1,
+          totvs_login: 1,
+          totvs_usuario: 1,
+        },
+      },
+    );
+
+    await TMongo.mongoDisconnect(client);
+
+    if (!response) {
+      return null;
+    }
+
+    return {
+      totvs_host: response.totvs_host ?? "",
+      totvs_port: response.totvs_port ?? "",
+      totvs_login: response.totvs_login ?? "",
+      totvs_usuario: response.totvs_usuario ?? "",
+    };
   } catch (error) {
     await TMongo.mongoDisconnect(client);
     throw error;

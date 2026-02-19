@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { DataTable } from "./DataTable";
 import { columns } from "./columns";
 import { FilterSection } from "./FilterSection";
 import { getOrders } from "@/actions/pedidoAction";
-import { FiltersOrder } from "@/types/OrderTypes";
+import { FiltersOrder, PaginatedOrderResult } from "@/types/OrderTypes";
 import { Loader2 } from "lucide-react";
 import { subDays } from "date-fns";
+
+const PAGE_SIZE = 20;
 
 // Função para calcular a data anterior baseada no dia da semana
 const getPreviousWorkingDate = (date: Date): Date => {
@@ -27,6 +29,7 @@ export default function OrderList() {
   const previousDate = getPreviousWorkingDate(currentDate);
   const [hasSearched, setHasSearched] = useState(false);
   const [searchTrigger, setSearchTrigger] = useState(0);
+  const [page, setPage] = useState(1);
 
   const [filters, setFilters] = useState<FiltersOrder>({
     numero: "",
@@ -37,24 +40,33 @@ export default function OrderList() {
     status: "",
   });
 
-  const { data, isLoading, error, refetch } = useQuery<any[]>({
-    queryKey: ["orders", filters, searchTrigger],
-    queryFn: () => getOrders(filters),
-    enabled: searchTrigger > 0, // Só executa quando searchTrigger > 0
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useQuery<PaginatedOrderResult>({
+    queryKey: ["orders", filters, searchTrigger, page, PAGE_SIZE],
+    queryFn: () => getOrders({ ...filters, page, pageSize: PAGE_SIZE }),
+    enabled: searchTrigger > 0,
+    placeholderData: keepPreviousData,
   });
 
   const handleFilterChange = (newFilters: Partial<FiltersOrder>) => {
-    const updatedFilters = { ...filters, ...newFilters };
-    setFilters(updatedFilters);
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+    setPage(1); // reset para primeira página ao trocar filtros
     setHasSearched(true);
-    // Incrementa o trigger para forçar uma nova busca
     setSearchTrigger((prev) => prev + 1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+    setPage(newPage);
   };
 
   if (error) {
     return (
       <div className="text-center text-red-500">
-        Error loading orders: {(error as Error).message}
+        Erro ao carregar pedidos: {(error as Error).message}
       </div>
     );
   }
@@ -67,22 +79,26 @@ export default function OrderList() {
         isLoading={isLoading}
       />
 
-      {hasSearched && (
-        <div className="text-right">
-          Total de registros: {data ? data.length : 0}
-        </div>
-      )}
-
-      {isLoading ? (
+      {isLoading && !result ? (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="h-8 w-8 animate-spin mr-2" />
           Carregando...
         </div>
       ) : hasSearched ? (
-        <DataTable columns={columns} data={data || []} />
+        <DataTable
+          columns={columns}
+          data={result?.data ?? []}
+          total={result?.total}
+          currentPage={result?.page}
+          pageSize={result?.pageSize}
+          totalPages={result?.totalPages}
+          onPageChange={handlePageChange}
+          isLoading={isLoading}
+        />
       ) : (
         <div className="text-center text-gray-500 py-8">
-          Configure os filtros e clique em "Enviar" para buscar os pedidos
+          Configure os filtros e clique em &quot;Enviar&quot; para buscar os
+          pedidos
         </div>
       )}
     </div>

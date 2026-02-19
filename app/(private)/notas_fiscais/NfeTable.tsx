@@ -1,3 +1,6 @@
+"use client";
+
+import { NfeRow } from "@/types/OrderTypes";
 import {
   Table,
   TableBody,
@@ -11,10 +14,10 @@ import Link from "next/link";
 import { getUser } from "@/hooks/useUser";
 import { useQuery } from "@tanstack/react-query";
 
-export default function NfeTable({ data }: any) {
+export default function NfeTable({ data }: { data: NfeRow[] }) {
   if (!data) return null;
 
-  const { data: user, error } = useQuery<any>({
+  const { data: user } = useQuery<any>({
     queryKey: ["getUserNfeTable"],
     queryFn: () => getUser(),
   });
@@ -23,7 +26,7 @@ export default function NfeTable({ data }: any) {
   let qtd = data?.length || 0;
   let sumOfValor = 0;
   if (admin) {
-    sumOfValor = data.reduce((acc: number, order: any) => acc + order.value, 0);
+    sumOfValor = data.reduce((acc: number, order) => acc + order.value, 0);
   }
 
   return (
@@ -51,7 +54,7 @@ export default function NfeTable({ data }: any) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.map((order: any) => (
+            {data.map((order) => (
               <TableRow key={order.id}>
                 <TableCell>
                   <Link href={`/orders/${order.slug}`}>
