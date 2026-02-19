@@ -45,8 +45,10 @@ export function TeamSwitcher({ teams }: { teams: Team[] }) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                {/* <activeTeam.logo className="size-4" /> */}
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground text-xs font-bold uppercase">
+                {activeTeam
+                  ? (activeTeam.fantasia || activeTeam.nome).trim().slice(0, 2)
+                  : "?"}
               </div>
               {activeTeam ? (
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -77,8 +79,8 @@ export function TeamSwitcher({ teams }: { teams: Team[] }) {
                 onClick={() => setActiveTeam(team)}
                 className="gap-2 p-2"
               >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
-                  {/* <team.logo className="size-4 shrink-0" /> */}
+                <div className="flex size-6 items-center justify-center rounded-sm border text-[10px] font-bold uppercase">
+                  {(team.fantasia || team.nome).trim().slice(0, 2)}
                 </div>
                 {team?.nome}
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>

@@ -71,4 +71,29 @@ export interface FiltersOrder {
   nome_cliente?: string;
   checkout_status?: number; // Added checkout_status filter
   checkout_filter?: string; //serve para sinalizar que o filtro é para o checkout
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PaginatedOrderResult {
+  data: Order[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface NfeRow {
+  id: string | number;
+  slug?: string;
+  numero: string | number;
+  nome_ecommerce: string;
+  numero_ecommerce: string;
+  orderId: string | number;
+  date: string;
+  nome: string;
+  status: string;
+  status_processo: number;
+  value: number;
+  region: string;
 }

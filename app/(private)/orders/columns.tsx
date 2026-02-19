@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash, Download, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { deleteOrder } from "@/actions/pedidoAction";
 import { saveOrderEtapa } from "@/actions/orderEtapaAction";
-import { useTransition } from "react";
+import { getInvoiceXml } from "@/actions/notaFiscalAction";
+import { useTransition, useState } from "react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -114,7 +115,7 @@ export const columns: ColumnDef<any>[] = [
       return (
         <div
           className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-            statusProcesso
+            statusProcesso,
           )}`}
         >
           {status}
@@ -133,8 +134,10 @@ export const columns: ColumnDef<any>[] = [
     header: "Acoes",
     cell: ({ row }) => {
       const orderId = row.getValue("id") as string;
+      const winthorOrderId = (row.original as any).orderId as string;
       const statusProcesso = row.getValue("status_processo") as number;
       const [isPending, startTransition] = useTransition();
+      const [isDownloading, setIsDownloading] = useState(false);
       const queryClient = useQueryClient();
       const isProcessed = statusProcesso === 2 || statusProcesso === 3;
       const isDisabled = isProcessed || isPending;
@@ -160,6 +163,37 @@ export const columns: ColumnDef<any>[] = [
         });
       };
 
+      const handleXmlDownload = async () => {
+        setIsDownloading(true);
+        try {
+          const result = await getInvoiceXml(winthorOrderId);
+          if (!result.success) {
+            toast.error(result.message || "Erro ao baixar XML da nota fiscal.");
+            return;
+          }
+          const xmlContent =
+            result.data?.xmlContent ||
+            (result.data?.invoiceXml ? atob(result.data.invoiceXml) : null);
+          if (!xmlContent) {
+            toast.error("XML da nota fiscal não encontrado.");
+            return;
+          }
+          const blob = new Blob([xmlContent], { type: "application/xml" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `nfe-${winthorOrderId}.xml`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch {
+          toast.error("Erro inesperado ao baixar o XML.");
+        } finally {
+          setIsDownloading(false);
+        }
+      };
+
       const getButtonText = () => {
         if (isPending) return "Processando...";
         return "Reprocessar";
@@ -176,6 +210,21 @@ export const columns: ColumnDef<any>[] = [
           >
             {getButtonText()}
           </Button>
+          {statusProcesso === 3 && winthorOrderId && (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isDownloading}
+              onClick={handleXmlDownload}
+            >
+              {isDownloading ? (
+                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+              ) : (
+                <Download className="h-3 w-3 mr-1" />
+              )}
+              XML
+            </Button>
+          )}
         </div>
       );
     },
