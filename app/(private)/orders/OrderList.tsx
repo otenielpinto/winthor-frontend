@@ -43,6 +43,7 @@ export default function OrderList() {
   const {
     data: result,
     isLoading,
+    isFetching,
     error,
   } = useQuery<PaginatedOrderResult>({
     queryKey: ["orders", filters, searchTrigger, page, PAGE_SIZE],
@@ -76,7 +77,7 @@ export default function OrderList() {
       <FilterSection
         filters={filters}
         onFilterChange={handleFilterChange}
-        isLoading={isLoading}
+        isLoading={isFetching}
       />
 
       {isLoading && !result ? (

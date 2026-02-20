@@ -210,7 +210,8 @@ export async function getDashboardOrders(filters: any): Promise<DashboardData> {
   };
 }
 
-export async function getOrders(filters: any): Promise<PaginatedOrderResult> {
+export async function 
+getOrders(filters: any): Promise<PaginatedOrderResult> {
   const user: any = await getUser();
   let startDate = filters.startDate
     ? lib.setUTCHoursStart(filters.startDate)
