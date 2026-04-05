@@ -126,6 +126,10 @@ const data = {
           title: "Enviar arquivo custo Kits",
           url: "/arquivos/custo-kits",
         },
+        {
+          title: "Importar Estoque",
+          url: "/arquivos/estoque",
+        },
       ],
     },
 
