@@ -6,14 +6,6 @@ import type { Product } from "@/types/ProductTypes";
 import { ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-function formatCurrency(value: number | null): string {
-  if (value == null) return "-";
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
-
 export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "descricao",
@@ -29,14 +21,6 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => {
       const gtin = row.getValue("gtin") as string | null;
       return gtin ?? "-";
-    },
-  },
-  {
-    accessorKey: "preco",
-    header: "Preço",
-    cell: ({ row }) => {
-      const preco = row.getValue("preco") as number;
-      return formatCurrency(preco);
     },
   },
   {
