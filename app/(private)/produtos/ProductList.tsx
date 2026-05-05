@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 
 const PAGE_SIZE = 20;
 
-export default function ProductList() {
+export default function  ProductList() {
   const [hasSearched, setHasSearched] = useState(false);
   const [searchTrigger, setSearchTrigger] = useState(0);
   const [page, setPage] = useState(1);

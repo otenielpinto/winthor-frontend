@@ -139,3 +139,85 @@ export async function getConfiguracaoTotvs(): Promise<ConfiguracaoTotvs | null> 
     throw error;
   }
 }
+
+export type ConfiguracaoTiny = {
+  token: string;
+};
+
+export async function getConfiguracaoTiny(): Promise<ConfiguracaoTiny | null> {
+  const user = await getUser();
+
+  if (!user || !user.id_tenant) {
+    return null;
+  }
+
+  const { client, clientdb } = await TMongo.connectToDatabase();
+
+  try {
+    const response = await clientdb.collection("tenant").findOne(
+      { id: Number(user.id_tenant) },
+      {
+        projection: {
+          tiny_token: 1,
+        },
+      },
+    );
+
+    await TMongo.mongoDisconnect(client);
+
+    if (!response) {
+      return null;
+    }
+
+    return {
+      token: response.tiny_token ?? "",
+    };
+  } catch (error) {
+    await TMongo.mongoDisconnect(client);
+    throw error;
+  }
+}
+
+export type RegiaoPreco = {
+  price_codregiao: string;
+  price_codfilial: string;
+  order_branchId: string;
+};
+
+export async function getRegiaoPreco(): Promise<RegiaoPreco | null> {
+  const user = await getUser();
+
+  if (!user || !user.id_tenant) {
+    return null;
+  }
+
+  const { client, clientdb } = await TMongo.connectToDatabase();
+
+  try {
+    const response = await clientdb.collection("tenant").findOne(
+      { id: Number(user.id_tenant) },
+      {
+        projection: {
+          price_codregiao: 1,
+          price_codfilial: 1,
+          order_branchId: 1,
+        },
+      },
+    );
+
+    await TMongo.mongoDisconnect(client);
+
+    if (!response) {
+      return null;
+    }
+
+    return {
+      price_codregiao: response.price_codregiao ?? "",
+      price_codfilial: response.price_codfilial ?? "",
+      order_branchId: response.order_branchId ?? "",
+    };
+  } catch (error) {
+    await TMongo.mongoDisconnect(client);
+    throw error;
+  }
+}
