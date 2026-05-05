@@ -40,6 +40,8 @@ function formatCurrency(value: number): string {
   return value.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   });
 }
 
@@ -56,6 +58,11 @@ function formatDate(value: string | null): string {
   } catch {
     return value;
   }
+}
+
+/** Redondea a 2 casas decimais para evitar imprecisão de ponto flutuante */
+function round2(value: number): number {
+  return Math.round(value * 100) / 100;
 }
 
 // ---------------------------------------------------------------------------
@@ -186,18 +193,19 @@ export default function FichaTecnicaPage({
   // --- Totals ---
   const { totalCusto, totalVenda } = components.reduce(
     (acc, c) => ({
-      totalCusto: acc.totalCusto + c.quantidade * c.precoCusto,
-      totalVenda: acc.totalVenda + c.quantidade * c.pvenda,
+      totalCusto: round2(acc.totalCusto + c.quantidade * c.precoCusto),
+      totalVenda: round2(acc.totalVenda + c.quantidade * c.pvenda),
     }),
     { totalCusto: 0, totalVenda: 0 }
   );
 
-  const margemVenda =
+  const margemVenda = round2(
     totalCusto > 0
       ? ((totalVenda - totalCusto) / totalCusto) * 100
       : totalVenda > 0
         ? 100
-        : 0;
+        : 0
+  );
 
   // --- Kit product (full view) ---
   return (
@@ -355,10 +363,10 @@ export default function FichaTecnicaPage({
                       {formatCurrency(c.pvenda)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatCurrency(c.quantidade * c.precoCusto)}
+                      {formatCurrency(round2(c.quantidade * c.precoCusto))}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      {formatCurrency(c.quantidade * c.pvenda)}
+                      {formatCurrency(round2(c.quantidade * c.pvenda))}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -15,9 +15,14 @@ import type {
 // Helper
 // ---------------------------------------------------------------------------
 
+/** Redondea a 2 casas decimais para evitar imprecisão de ponto flutuante */
+function round2(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
 function getPrecoCusto(payload: ProductPriceDoc | null | undefined): number {
   // O campo "custo" define o preço de custo do produto no WinThor
-  return Number(payload?.custo ?? 0);
+  return round2(Number(payload?.custo ?? 0));
 }
 
 /**
@@ -140,10 +145,10 @@ export async function getFichaTecnicaProduto(
           sku,
           descricao: productDoc?.descricao ?? null,
           dtultent: normalizeDtUltEnt(priceDoc?.dtultent),
-          pvenda: priceDoc?.pvenda ?? 0,
-          ptabela: priceDoc?.ptabela ?? 0,
-          precoCusto: getPrecoCusto(priceDoc),
-          custocont: priceDoc?.custocont ?? 0,
+          pvenda: round2(priceDoc?.pvenda ?? 0),
+          ptabela: round2(priceDoc?.ptabela ?? 0),
+          precoCusto: round2(getPrecoCusto(priceDoc)),
+          custocont: round2(priceDoc?.custocont ?? 0),
         };
       });
 
@@ -156,13 +161,12 @@ export async function getFichaTecnicaProduto(
         codigo: tinyProduct.codigo,
         sku: null,
         descricao: null,
-        codfilial: (mainPriceDoc as any)?.codfilial ?? "",
         unidade: tinyProduct.unidade,
-        preco: tinyProduct.preco ?? 0,
-        pvenda: (mainPriceDoc as any)?.pvenda ?? 0,
-        ptabela: (mainPriceDoc as any)?.ptabela ?? 0,
-        precoCusto: getPrecoCusto(mainPriceDoc as any),
-        custocont: (mainPriceDoc as any)?.custocont ?? 0,
+        preco: round2(tinyProduct.preco ?? 0),
+        pvenda: round2((mainPriceDoc as any)?.pvenda ?? 0),
+        ptabela: round2((mainPriceDoc as any)?.ptabela ?? 0),
+        precoCusto: round2(getPrecoCusto(mainPriceDoc as any)),
+        custocont: round2((mainPriceDoc as any)?.custocont ?? 0),
       };
 
       return {
@@ -200,13 +204,12 @@ export async function getFichaTecnicaProduto(
         codigo: tinyProduct.codigo,
         sku,
         descricao: productDoc?.descricao ?? null,
-        codfilial: (priceDoc as any)?.codfilial ?? "",
         unidade: tinyProduct.unidade,
-        preco: tinyProduct.preco ?? 0,
-        pvenda: (priceDoc as any)?.pvenda ?? 0,
-        ptabela: (priceDoc as any)?.ptabela ?? 0,
-        precoCusto: getPrecoCusto(priceDoc as any),
-        custocont: (priceDoc as any)?.custocont ?? 0,
+        preco: round2(tinyProduct.preco ?? 0),
+        pvenda: round2((priceDoc as any)?.pvenda ?? 0),
+        ptabela: round2((priceDoc as any)?.ptabela ?? 0),
+        precoCusto: round2(getPrecoCusto(priceDoc as any)),
+        custocont: round2((priceDoc as any)?.custocont ?? 0),
       };
 
       return {
