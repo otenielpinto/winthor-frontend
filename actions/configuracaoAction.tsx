@@ -180,8 +180,7 @@ export async function getConfiguracaoTiny(): Promise<ConfiguracaoTiny | null> {
 
 export type RegiaoPreco = {
   price_codregiao: string;
-  price_codfilial: string;
-  order_branchId: string;
+  codfilial: string;
 };
 
 export async function getRegiaoPreco(): Promise<RegiaoPreco | null> {
@@ -199,7 +198,6 @@ export async function getRegiaoPreco(): Promise<RegiaoPreco | null> {
       {
         projection: {
           price_codregiao: 1,
-          price_codfilial: 1,
           order_branchId: 1,
         },
       },
@@ -210,11 +208,12 @@ export async function getRegiaoPreco(): Promise<RegiaoPreco | null> {
     if (!response) {
       return null;
     }
+    //codfilial = response.order_branchId ( pegar esse campo aqui para usar na consulta de preço do produto, caso seja preenchido )
+    // pegar o mesmo preco que vai dar a saida
 
     return {
       price_codregiao: response.price_codregiao ?? "",
-      price_codfilial: response.price_codfilial ?? "",
-      order_branchId: response.order_branchId ?? "",
+      codfilial: response.order_branchId ?? "",
     };
   } catch (error) {
     await TMongo.mongoDisconnect(client);

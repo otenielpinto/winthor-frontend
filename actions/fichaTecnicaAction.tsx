@@ -115,8 +115,8 @@ export async function getFichaTecnicaProduto(
       };
 
       //pegar o preco de venda da desse campo
-      if (regiao.order_branchId) {
-        priceQuery.codfilial = regiao.order_branchId;
+      if (regiao.codfilial) {
+        priceQuery.codfilial = regiao.codfilial;
       }
 
       const prices =
@@ -161,6 +161,7 @@ export async function getFichaTecnicaProduto(
         codigo: tinyProduct.codigo,
         sku: null,
         descricao: null,
+        codfilial: (mainPriceDoc as any)?.codfilial ?? "",
         unidade: tinyProduct.unidade,
         preco: round2(tinyProduct.preco ?? 0),
         pvenda: round2((mainPriceDoc as any)?.pvenda ?? 0),
@@ -190,8 +191,8 @@ export async function getFichaTecnicaProduto(
         numregiao: regiao.price_codregiao,
         idtenant,
       };
-      if (regiao.price_codfilial) {
-        priceQuery.codfilial = regiao.price_codfilial;
+      if (regiao.codfilial) {
+        priceQuery.codfilial = regiao.codfilial;
       }
 
       const priceDoc = sku
@@ -204,8 +205,23 @@ export async function getFichaTecnicaProduto(
         codigo: tinyProduct.codigo,
         sku,
         descricao: productDoc?.descricao ?? null,
+        codfilial: (priceDoc as any)?.codfilial ?? "",
         unidade: tinyProduct.unidade,
         preco: round2(tinyProduct.preco ?? 0),
+        pvenda: round2((priceDoc as any)?.pvenda ?? 0),
+        ptabela: round2((priceDoc as any)?.ptabela ?? 0),
+        precoCusto: round2(getPrecoCusto(priceDoc as any)),
+        custocont: round2((priceDoc as any)?.custocont ?? 0),
+      };
+
+      // Build component with same structure as kit components
+      const component: FichaTecnicaComponent = {
+        id_produto: tinyProduct.id,
+        quantidade: 1,
+        codfilial: (priceDoc as any)?.codfilial ?? null,
+        sku,
+        descricao: productDoc?.descricao ?? null,
+        dtultent: normalizeDtUltEnt((priceDoc as any)?.dtultent),
         pvenda: round2((priceDoc as any)?.pvenda ?? 0),
         ptabela: round2((priceDoc as any)?.ptabela ?? 0),
         precoCusto: round2(getPrecoCusto(priceDoc as any)),
@@ -215,7 +231,7 @@ export async function getFichaTecnicaProduto(
       return {
         success: true,
         message: "Ficha técnica retrieved successfully",
-        data: { product, components: [], isKit: false },
+        data: { product, components: [component], isKit: false },
       };
     }
   } finally {

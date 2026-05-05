@@ -9,6 +9,7 @@ import {
   ClipboardList,
   AlertTriangle,
   PackageOpen,
+  ExternalLink,
 } from "lucide-react";
 import { getFichaTecnicaProduto } from "@/actions/fichaTecnicaAction";
 import type { FichaTecnicaComponent } from "@/types/FichaTecnicaTypes";
@@ -149,47 +150,6 @@ export default function FichaTecnicaPage({
 
   const { product, components, isKit } = result.data!;
 
-  // --- Non-kit product ---
-  if (!isKit) {
-    return (
-      <div className="container mx-auto py-10 space-y-6">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => router.push("/produtos")}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-3xl font-bold">Ficha Técnica</h1>
-        </div>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <PackageOpen className="h-5 w-5" />
-              {product.nome}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <p>
-              <span className="font-medium">Código:</span> {product.codigo}
-            </p>
-            <p>
-              <span className="font-medium">Unidade:</span> {product.unidade}
-            </p>
-          </CardContent>
-        </Card>
-        <Alert>
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Produto simples</AlertTitle>
-          <AlertDescription>
-            Este produto não é um kit e não possui componentes.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
   // --- Totals ---
   const { totalCusto, totalVenda } = components.reduce(
     (acc, c) => ({
@@ -207,7 +167,7 @@ export default function FichaTecnicaPage({
         : 0
   );
 
-  // --- Kit product (full view) ---
+  // --- Full view (kit or simple product) ---
   return (
     <div className="container mx-auto py-10 space-y-6">
       {/* Header */}
@@ -224,8 +184,9 @@ export default function FichaTecnicaPage({
           <p className="text-muted-foreground">{product.nome}</p>
         </div>
         <Badge variant="secondary" className="ml-auto">
-          Kit — {components.length} componente
-          {components.length !== 1 ? "s" : ""}
+          {isKit
+            ? `Kit — ${components.length} componente${components.length !== 1 ? "s" : ""}`
+            : "Produto simples"}
         </Badge>
       </div>
 
@@ -244,7 +205,17 @@ export default function FichaTecnicaPage({
           </div>
           <div>
             <span className="text-sm text-muted-foreground">Código</span>
-            <p className="font-medium">{product.codigo}</p>
+            <p>
+              <a
+                href={`https://erp.olist.com/produtos#edit/${product.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-primary hover:underline inline-flex items-center gap-1"
+              >
+                {product.codigo}
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </p>
           </div>
           <div>
             <span className="text-sm text-muted-foreground">Unidade</span>

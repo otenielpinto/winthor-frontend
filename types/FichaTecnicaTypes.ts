@@ -36,7 +36,7 @@ export interface FichaTecnicaProductResult {
   codigo: string;
   sku: string | null;
   descricao: string | null;
-  codfilial: string;
+  codfilial: string | null;
   unidade: string;
   /** Preço atual no Tiny ERP (sem região — preço base do produto) */
   preco: number;
