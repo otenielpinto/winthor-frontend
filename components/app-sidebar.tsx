@@ -16,6 +16,7 @@ import {
   User,
   MessageCircle,
   Files,
+  Database,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -91,6 +92,18 @@ const data = {
         {
           title: "Registro de Pacotes",
           url: "/checkout/nfe_registro_cargas",
+        },
+      ],
+    },
+
+    {
+      title: "Cadastro",
+      url: "#",
+      icon: Database,
+      items: [
+        {
+          title: "Produtos",
+          url: "/produtos",
         },
       ],
     },
