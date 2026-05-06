@@ -11,6 +11,8 @@ export interface ProductPriceDoc {
   custocont?: number;
   /** Data da última entrada — pode ser null */
   dtultent: string | null;
+  /** Origem da mercadoria (tributação) */
+  origmerctrib: string | null;
 }
 
 /** Single kit component with resolved pricing */
@@ -19,6 +21,8 @@ export interface FichaTecnicaComponent {
   quantidade: number;
   /** Filial do preço (vem de product_price.codfilial) */
   codfilial: string | null;
+  /** Origem da mercadoria (vem de product_price.origmerctrib) */
+  origmerctrib: string | null;
   sku: string | null;
   descricao: string | null;
   /** Data da última entrada (vem de product_price.dtultent) */

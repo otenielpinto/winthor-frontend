@@ -302,6 +302,7 @@ export default function FichaTecnicaPage({
                 <TableRow>
                   <TableHead>SKU</TableHead>
                   <TableHead>Descrição</TableHead>
+                  <TableHead className="text-right">Origem</TableHead>
                   <TableHead className="text-right">Filial</TableHead>
                   <TableHead className="text-right">Qtd</TableHead>
                   <TableHead className="text-right">Dt. Últ. Entrada</TableHead>
@@ -318,6 +319,9 @@ export default function FichaTecnicaPage({
                       {c.sku ?? "—"}
                     </TableCell>
                     <TableCell>{c.descricao ?? "—"}</TableCell>
+                    <TableCell className="text-right">
+                      {c.origmerctrib ?? "—"}
+                    </TableCell>
                     <TableCell className="text-right">
                       {c.codfilial ?? "—"}
                     </TableCell>
@@ -343,7 +347,7 @@ export default function FichaTecnicaPage({
                 ))}
                 {/* Totals row */}
                 <TableRow className="border-t-2 font-bold">
-                  <TableCell colSpan={5}>Totais</TableCell>
+                  <TableCell colSpan={6}>Totais</TableCell>
                   <TableCell className="text-right">—</TableCell>
                   <TableCell className="text-right">—</TableCell>
                   <TableCell className="text-right text-amber-600 dark:text-amber-400">
