@@ -12,6 +12,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { deleteOrder } from "@/actions/pedidoAction";
 import { saveOrderEtapa } from "@/actions/orderEtapaAction";
 import { getInvoiceXml } from "@/actions/notaFiscalAction";
@@ -201,15 +212,36 @@ export const columns: ColumnDef<any>[] = [
 
       return (
         <div className="flex gap-2">
-          <Button
-            variant="destructive"
-            size="sm"
-            disabled={isDisabled}
-            onClick={!isProcessed ? handleDeleteOrderClick : undefined}
-            className="text-sm font-medium"
-          >
-            {getButtonText()}
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="sm"
+                disabled={isDisabled}
+                className="text-sm font-medium"
+              >
+                {getButtonText()}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirmar Reprocessamento</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Deseja realmente reprocessar este pedido? Esta ação irá
+                  deletar o pedido atual.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteOrderClick}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Reprocessar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           {statusProcesso === 3 && winthorOrderId && (
             <Button
               variant="outline"
