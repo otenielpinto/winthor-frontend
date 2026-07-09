@@ -234,7 +234,7 @@ export const columns: ColumnDef<any>[] = [
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={handleDeleteOrderClick}
+                  onClick={!isProcessed ? handleDeleteOrderClick : undefined}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
                   Reprocessar
