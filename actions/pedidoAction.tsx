@@ -48,11 +48,32 @@ function obterMessageWTA(wtaMessage: any) {
   return result;
 }
 
+// ponytail: checkout_data já é gravado em "horário BR disfarçado de UTC"
+// (orderAction usa lib.dateToBr = now.getTime() - 3h antes de salvar).
+// Exibir com timeZone America/Sao_Paulo aplicaria o offset DE NOVO → -6h.
+// timeZone: "UTC" é no-op de timezone: mostra o epoch interno como já está,
+// repondo o horário BR original gravado. Se orderAction parar de subtrair 3h
+// e passar a gravar UTC puro, troque para "America/Sao_Paulo".
+const fmtCheckoutDateTime = (d: unknown): string =>
+  d instanceof Date || typeof d === "string" || typeof d === "number"
+    ? new Date(d as Date | string | number).toLocaleString("pt-BR", {
+        timeZone: "UTC",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "";
+
 export async function toOrdersMappers(rows: any): Promise<Order[]> {
   let orders: Order[] = [];
-  for (let order of rows) {
+  for (const order of rows) {
     let status_wta = obterMessageWTA(order.wta_message);
     let region: Region = lib.classifyRegion(order.pedido.cliente.uf) as Region;
+
+    const checkout_user = order.checkout_user ?? "";
+    const checkout_data = fmtCheckoutDateTime(order.checkout_data);
 
     orders.push({
       id: order.pedido.id,
@@ -67,6 +88,8 @@ export async function toOrdersMappers(rows: any): Promise<Order[]> {
       status_processo: order.status,
       orderId: order.orderId,
       slug: order._id.toString(),
+      checkout_user,
+      checkout_data,
     } as Order);
   }
   return orders;

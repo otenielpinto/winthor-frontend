@@ -59,6 +59,8 @@ export interface Order {
   status_processo?: number;
   orderId?: string;
   slug?: any;
+  checkout_user?: string;
+  checkout_data?: string;
 }
 
 export interface FiltersOrder {
@@ -96,4 +98,6 @@ export interface NfeRow {
   status_processo: number;
   value: number;
   region: string;
+  checkout_user?: string;
+  checkout_data?: string;
 }

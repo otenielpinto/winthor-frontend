@@ -51,6 +51,8 @@ export default function NfeTable({ data }: { data: NfeRow[] }) {
               <TableHead>Status</TableHead>
               <TableHead>Valor</TableHead>
               <TableHead>Região</TableHead>
+              <TableHead>Usuário</TableHead>
+              <TableHead>Dt.Hora</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -71,6 +73,8 @@ export default function NfeTable({ data }: { data: NfeRow[] }) {
                 <TableCell>{order.status}</TableCell>
                 <TableCell>R$ {order.value.toFixed(2)}</TableCell>
                 <TableCell>{order.region}</TableCell>
+                <TableCell>{order.checkout_user ?? ""}</TableCell>
+                <TableCell>{order.checkout_data ?? ""}</TableCell>
               </TableRow>
             ))}
           </TableBody>
