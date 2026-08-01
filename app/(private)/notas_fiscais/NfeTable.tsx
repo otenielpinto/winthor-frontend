@@ -51,7 +51,7 @@ export default function NfeTable({ data }: { data: NfeRow[] }) {
               <TableHead>Status</TableHead>
               <TableHead>Valor</TableHead>
               <TableHead>Região</TableHead>
-              <TableHead>Usuário</TableHead>
+              <TableHead>Usuario</TableHead>
               <TableHead>Dt.Hora</TableHead>
             </TableRow>
           </TableHeader>
