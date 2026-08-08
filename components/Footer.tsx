@@ -2,46 +2,50 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 text-white py-8">
+    <footer className="bg-[#09090b] border-t border-white/10 py-12">
       <div className="container mx-auto px-4">
-        <div className="flex flex-wrap justify-between">
-          <div className="w-full md:w-1/3 mb-6 md:mb-0">
-            <h3 className="text-lg font-semibold mb-2">WTA Connect</h3>
-            <p>Soluções de integração para o seu negócio</p>
+        <div className="grid md:grid-cols-3 gap-8">
+          <div>
+            <h3 className="font-display text-white font-semibold mb-3">
+              WTA Connect<span className="text-brand">.</span>
+            </h3>
+            <p className="text-zinc-400 text-sm">
+              Soluções de integração para o seu negócio
+            </p>
           </div>
-          <div className="w-full md:w-1/3 mb-6 md:mb-0">
-            <h3 className="text-lg font-semibold mb-2">Links Rápidos</h3>
-            <ul>
+          <div>
+            <h3 className="text-white font-semibold mb-3">Links Rápidos</h3>
+            <ul className="space-y-2 text-sm">
               <li>
-                <Link href="#beneficios" className="hover:text-gray-300">
+                <Link href="#beneficios" className="text-zinc-400 hover:text-white transition">
                   Benefícios
                 </Link>
               </li>
               <li>
-                <Link href="#como-funciona" className="hover:text-gray-300">
+                <Link href="#como-funciona" className="text-zinc-400 hover:text-white transition">
                   Como Funciona
                 </Link>
               </li>
               <li>
-                <Link href="#faq" className="hover:text-gray-300">
+                <Link href="#faq" className="text-zinc-400 hover:text-white transition">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="#contato" className="hover:text-gray-300">
+                <Link href="#contato" className="text-zinc-400 hover:text-white transition">
                   Contato
                 </Link>
               </li>
             </ul>
           </div>
-          <div className="w-full md:w-1/3">
-            <h3 className="text-lg font-semibold mb-2">Contato</h3>
-            <p>oteniel.pinto@gmail.com</p>
-            <p>(51) 99866-4776</p>
+          <div>
+            <h3 className="text-white font-semibold mb-3">Contato</h3>
+            <p className="text-zinc-400 text-sm">oteniel.pinto@gmail.com</p>
+            <p className="text-zinc-400 text-sm mt-1">(51) 99866-4776</p>
           </div>
         </div>
-        <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-          <p>
+        <div className="border-t border-white/10 mt-10 pt-8 text-center">
+          <p className="text-zinc-500 text-sm">
             &copy; {new Date().getFullYear()} WTA Connect. Todos os direitos
             reservados.
           </p>

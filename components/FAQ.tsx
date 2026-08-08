@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { Plus } from "lucide-react";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -13,7 +15,7 @@ export default function FAQ() {
     {
       question: "Quais marketplaces são suportados?",
       answer:
-        "Nossa solução suporta integração com os principais marketplaces do Brasil, incluindo Mercado Livre, Olist Tiny , B2W, Magazine Luiza, entre outros. Estamos constantemente adicionando novas integrações.",
+        "Nossa solução suporta integração com os principais marketplaces do Brasil, incluindo Mercado Livre, Olist, Tiny, B2W, Magazine Luiza, entre outros. Estamos constantemente adicionando novas integrações.",
     },
     {
       question: "Como funciona o suporte técnico após a implementação?",
@@ -23,24 +25,38 @@ export default function FAQ() {
   ];
 
   return (
-    <section id="faq" className="py-20 bg-white">
+    <section id="faq" className="py-24 bg-zinc-900/40">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">
+        <p className="text-brand text-xs font-semibold tracking-widest text-center mb-4">
+          DÚVIDAS
+        </p>
+        <h2 className="font-display text-3xl md:text-4xl font-bold text-white text-center mb-12">
           Perguntas Frequentes
         </h2>
         <div className="max-w-3xl mx-auto">
           {faqs.map((faq, index) => (
-            <div key={index} className="mb-4 border-b border-gray-200 pb-4">
+            <div key={index} className="border-b border-white/10">
               <button
-                className="flex justify-between items-center w-full text-left"
+                className="py-5 w-full flex justify-between items-center text-left"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                aria-expanded={openIndex === index}
               >
-                <span className="text-lg font-semibold">{faq.question}</span>
-                {openIndex === index ? <ChevronUp /> : <ChevronDown />}
+                <span className="text-white font-semibold pr-4">
+                  {faq.question}
+                </span>
+                <Plus
+                  className={`h-5 w-5 shrink-0 text-brand transition-transform duration-300 ${
+                    openIndex === index ? "rotate-45" : ""
+                  }`}
+                />
               </button>
-              {openIndex === index && (
-                <p className="mt-2 text-gray-600">{faq.answer}</p>
-              )}
+              <div
+                className={`overflow-hidden transition-all duration-300 ${
+                  openIndex === index ? "max-h-48 pb-5" : "max-h-0"
+                }`}
+              >
+                <p className="text-zinc-400 leading-relaxed">{faq.answer}</p>
+              </div>
             </div>
           ))}
         </div>
