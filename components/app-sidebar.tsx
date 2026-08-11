@@ -124,6 +124,11 @@ const data = {
         },
 
         {
+          title: "Configuracoes Fiscais DIFAL",
+          url: "/configuracao-fiscais-difal",
+        },
+
+        {
           title: "Tabela Preco fixo Kits",
           url: "/produto-preco-kit",
         },
