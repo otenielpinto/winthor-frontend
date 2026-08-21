@@ -17,6 +17,7 @@ import {
   MessageCircle,
   Files,
   Database,
+  FileBarChart,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -147,6 +148,18 @@ const data = {
         {
           title: "Importar Estoque",
           url: "/arquivos/estoque",
+        },
+      ],
+    },
+
+    {
+      title: "Relatorios",
+      url: "#",
+      icon: FileBarChart,
+      items: [
+        {
+          title: "Produtos Kit",
+          url: "/relatorios/produtos-kit",
         },
       ],
     },
