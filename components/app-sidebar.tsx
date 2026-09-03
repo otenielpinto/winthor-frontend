@@ -18,6 +18,7 @@ import {
   Files,
   Database,
   FileBarChart,
+  Warehouse,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -35,6 +36,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUser } from "@/hooks/useUser";
 import { getUserEmpresas } from "@/actions/userAction";
+import { getEmpresasWms } from "@/actions/empresaWmsAction";
 
 // This is sample data.
 const data = {
@@ -98,10 +100,26 @@ const data = {
     },
 
     {
+      title: "Estoque WMS",
+      url: "#",
+      icon: Warehouse,
+      items: [
+        {
+          title: "Estoque Disponível",
+          url: "/estoque-wms",
+        },
+      ],
+    },
+
+    {
       title: "Cadastro",
       url: "#",
       icon: Database,
       items: [
+        {
+          title: "Empresas",
+          url: "/empresas",
+        },
         {
           title: "Produtos",
           url: "/produtos",
@@ -194,7 +212,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const { data: empresas, isLoading: isLoadingEmpresas } = useQuery<any>({
     queryKey: ["nav-empresas", isLoading, xuser, xuser?.id],
-    queryFn: async () => await getUserEmpresas(xuser?.id),
+    queryFn: async () => {
+      const [emp, wms] = await Promise.all([
+        getUserEmpresas(xuser?.id),
+        getEmpresasWms(),
+      ]);
+      // Merge empresa + empresa_wms into the TeamSwitcher shape
+      return [
+        ...emp,
+        ...wms.map((w: any) => ({
+          id: String(w.id),
+          nome: w.nome,
+          fantasia: w.nome,
+          cpfcnpj: w.cnpj,
+        })),
+      ];
+    },
   });
 
   if (isLoading || isLoadingEmpresas) {

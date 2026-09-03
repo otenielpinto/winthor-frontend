@@ -22,23 +22,20 @@ export async function createAccount(formData: FormData) {
 }
 
 // https://makerkit.dev/blog/tutorials/nextjs-server-actions
-export async function login(formData: FormData) {
+export async function login(
+  formData: FormData
+): Promise<{ success: boolean; message: string }> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   let user = await getUserByEmail(email);
 
   if (!user) {
-    // Aqui você pode usar optimistic update para atualizar a tela
-    console.log("Usuário ou senha inválidos");
-    redirect("/sign-in");
+    return { success: false, message: "Usuário ou senha inválidos" };
   }
 
-  bcryptjs.genSalt(10);
   const isMatch = await bcryptjs.compare(password, user.password);
   if (!isMatch) {
-    console.log("Usuário ou senha inválidos");
-    alert("Usuário ou senha inválidos");
-    redirect("/sign-in");
+    return { success: false, message: "Usuário ou senha inválidos" };
   }
 
   await AuthService.createSessionToken({

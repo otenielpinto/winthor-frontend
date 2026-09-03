@@ -16,6 +16,9 @@ function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+// ponytail: fixed filial for provisional stock lookup; parametrize when needed
+const DEFAULT_CODFILIAL = "3";
+
 export async function getProducts(
   filters: ProductFilters
 ): Promise<PaginatedProductResult> {
@@ -73,6 +76,28 @@ export async function getProducts(
         .toArray(),
     ]);
 
+    // Batch stock lookup for the current page.
+    // product_stock.productId references product.sku (verified against live data),
+    // not product.id.
+    const skus = rows.map((doc: any) => String(doc.sku)).filter(Boolean);
+    const stockMap = new Map<string, number>();
+    if (skus.length > 0) {
+      const stockRows = await clientdb
+        .collection("product_stock")
+        .find(
+          {
+            idtenant,
+            productId: { $in: skus },
+            codfilial: DEFAULT_CODFILIAL,
+          },
+          { projection: { _id: 0, productId: 1, quantity: 1 } }
+        )
+        .toArray();
+      for (const s of stockRows) {
+        stockMap.set(String(s.productId), s.quantity ?? 0);
+      }
+    }
+
     const products: Product[] = rows.map((doc: any) => ({
       id: doc.id,
       idtenant: doc.idtenant,
@@ -85,6 +110,7 @@ export async function getProducts(
       preco_custo_medio: doc.preco_custo_medio ?? null,
       preco_promocional: doc.preco_promocional ?? null,
       unidade: doc.unidade,
+      estoque: stockMap.get(String(doc.sku)) ?? null,
     }));
 
     return {

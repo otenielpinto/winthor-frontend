@@ -10,6 +10,7 @@ export interface Product {
   preco_custo_medio: number | null;
   preco_promocional: number | null;
   unidade: string;
+  estoque: number | null;
 }
 
 export interface ProductFilters {

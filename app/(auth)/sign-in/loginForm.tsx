@@ -27,7 +27,10 @@ export function LoginForm({
 
   async function handleLogin(formData: FormData) {
     startTransition(async () => {
-      await login(formData);
+      const res = await login(formData);
+      if (res && !res.success) {
+        toast.error(res.message);
+      }
     });
   }
 

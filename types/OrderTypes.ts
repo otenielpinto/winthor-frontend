@@ -48,6 +48,7 @@ export type Region = "Norte" | "Nordeste" | "Centro-Oeste" | "Sudeste" | "Sul";
 
 export interface Order {
   id: string;
+  idtenant?: number;
   numero: string;
   numero_ecommerce: string;
   nome_ecommerce: string;

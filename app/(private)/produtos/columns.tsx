@@ -28,6 +28,14 @@ export const columns: ColumnDef<Product>[] = [
     header: "Unidade",
   },
   {
+    accessorKey: "estoque",
+    header: "Estoque",
+    cell: ({ row }) => {
+      const estoque = row.getValue("estoque") as number | null;
+      return estoque ?? "-";
+    },
+  },
+  {
     id: "actions",
     header: "Ações",
     cell: ({ row }) => {

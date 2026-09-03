@@ -32,6 +32,10 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export const columns: ColumnDef<any>[] = [
   {
+    accessorKey: "idtenant",
+    header: "Loja",
+  },
+  {
     accessorKey: "id",
     header: "Codigo interno",
     cell: ({ row }) => {

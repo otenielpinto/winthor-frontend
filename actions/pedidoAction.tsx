@@ -301,6 +301,7 @@ getOrders(filters: any): Promise<PaginatedOrderResult> {
 
     orders.push({
       id: order.pedido.id,
+      idtenant: order.idtenant,
       numero: order.pedido.numero,
       numero_ecommerce: order.pedido.numero_ecommerce,
       nome_ecommerce: order?.pedido?.ecommerce?.nomeEcommerce,
