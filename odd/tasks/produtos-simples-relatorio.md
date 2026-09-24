@@ -11,6 +11,9 @@ Relatório Excel (mesmo formato de Produtos Kit) lendo a collection `product_pri
 ## Mudança aceita (usuário, 2ª iteração)
 - Filial não é mais fixa: **seletor de filial** na página. Opções vindas de `distinct codfilial` por tenant (action `getFiliaisProdutosSimples`). Default: "3" quando existir.
 
+## Mudança aceita (usuário, 3ª iteração)
+- **Checkbox "Somente produtos com custo maior que zero"**, marcado por padrão. Filtro no servidor (`custo: { $gt: 0 }`) — payload de ~37% menor.
+
 ## Mapeamento de campos
 | Coluna | Campo `product_price` |
 |--------|----------------------|
@@ -29,6 +32,7 @@ Relatório Excel (mesmo formato de Produtos Kit) lendo a collection `product_pri
 - [x] TS-2: página `/relatorios/produtos-simples` com seletor de filial (shadcn Select) e export Excel (reportToExcel)
 - [x] TS-3: menu "Produtos Simples" abaixo de "Produtos Kit"
 - [x] TS-4: work-unit commit (build OK)
+- [x] TS-5: checkbox custo>0 (default marcado), filtro server-side com zod + query `$gt`
 
 ## Verificação / evidência
 - `npm run build`: PASS — rota `/relatorios/produtos-simples` presente (3.56 kB).

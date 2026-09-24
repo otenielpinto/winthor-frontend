@@ -16,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Download, Loader2, FileSpreadsheet } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -34,6 +36,7 @@ const columns = [
 export default function RelatorioProdutosSimplesPage() {
   const [filiais, setFiliais] = useState<string[]>([]);
   const [codfilial, setCodfilial] = useState<string>("");
+  const [somenteComCusto, setSomenteComCusto] = useState(true);
   const [loadingFiliais, setLoadingFiliais] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -68,7 +71,10 @@ export default function RelatorioProdutosSimplesPage() {
 
     setIsExporting(true);
     try {
-      const result = await getProdutosSimplesRelatorio(codfilial);
+      const result = await getProdutosSimplesRelatorio({
+        codfilial,
+        somenteComCusto,
+      });
 
       if (!result.success || !result.data) {
         toast.error(result.message);
@@ -127,6 +133,17 @@ export default function RelatorioProdutosSimplesPage() {
                 </SelectContent>
               </Select>
             )}
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="somente-com-custo"
+              checked={somenteComCusto}
+              onCheckedChange={(checked) => setSomenteComCusto(checked === true)}
+            />
+            <Label htmlFor="somente-com-custo" className="text-sm font-normal">
+              Somente produtos com custo maior que zero
+            </Label>
           </div>
 
           <Button

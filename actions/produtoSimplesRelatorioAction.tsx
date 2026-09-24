@@ -6,7 +6,10 @@ import { getUser } from "@/hooks/useUser";
 
 const COLLECTION = "product_price";
 
-const codfilialSchema = z.string().trim().min(1, "Filial é obrigatória");
+const filtroSchema = z.object({
+  codfilial: z.string().trim().min(1, "Filial é obrigatória"),
+  somenteComCusto: z.boolean(),
+});
 
 export interface ProdutoSimplesRelatorioItem {
   codprod: string;
@@ -57,7 +60,7 @@ export async function getFiliaisProdutosSimples(): Promise<{
 }
 
 export async function getProdutosSimplesRelatorio(
-  codfilial: string
+  params: z.infer<typeof filtroSchema>
 ): Promise<ProdutoSimplesRelatorioResult> {
   const user = await getUser();
 
@@ -65,11 +68,11 @@ export async function getProdutosSimplesRelatorio(
     return { success: false, message: "Usuário não autenticado" };
   }
 
-  const parsed = codfilialSchema.safeParse(codfilial);
+  const parsed = filtroSchema.safeParse(params);
   if (!parsed.success) {
     return {
       success: false,
-      message: parsed.error.issues[0]?.message ?? "Filial inválida",
+      message: parsed.error.issues[0]?.message ?? "Filtro inválido",
     };
   }
 
@@ -79,7 +82,11 @@ export async function getProdutosSimplesRelatorio(
     const rows = await clientdb
       .collection(COLLECTION)
       .find(
-        { idtenant: user.id_tenant, codfilial: parsed.data },
+        {
+          idtenant: user.id_tenant,
+          codfilial: parsed.data.codfilial,
+          ...(parsed.data.somenteComCusto && { custo: { $gt: 0 } }),
+        },
         {
           projection: {
             _id: 0,
