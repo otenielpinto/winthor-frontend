@@ -179,6 +179,10 @@ const data = {
           title: "Produtos Kit",
           url: "/relatorios/produtos-kit",
         },
+        {
+          title: "Produtos Simples",
+          url: "/relatorios/produtos-simples",
+        },
       ],
     },
 
