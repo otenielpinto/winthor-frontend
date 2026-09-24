@@ -34,6 +34,7 @@ Relatório Excel (mesmo formato de Produtos Kit) lendo a collection `product_pri
 - `npm run build`: PASS — rota `/relatorios/produtos-simples` presente (3.56 kB).
 - `npx next lint`: SKIPPED — ESLint nunca configurado no projeto (wizard interativo de setup); configurar lint foge ao escopo da feature.
 - Tipo de dado verificado no Mongo: codfilial é string ("1"/"3"); 46.598 produtos (tenant 1), 92.253 (tenant 2); 2 linhas por produto.
+- RDD assess (base-ref main, committed-only): risk **medium** (executable_change), 4 paths / 303 lines, `review_due: false` (**under_budget**). Avaliação de alta-risco inicial falhou por untracked `sync/` (pré-existente do usuário); reavaliado com `--untracked-scope=exclude` + inventário confirmado.
 - Sort por `codprod` adicionado (lexicográfico) — melhoria de usabilidade não pedida explicitamente; 46k linhas sem ordem seriam inutilizáveis.
 
 ## Rota escolhida
